@@ -1,0 +1,2297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choux Pastry STEM Lab</title>
+  <style>
+    /* Modern Fluid CSS Design System with SLS Adaptive Tokens */
+    :root {
+      --color-primary-light: #fff7ed;
+      --color-primary-medium: #f59e0b;
+      --color-primary-dark: #b45309;
+      --color-accent: #c2410c;
+      --color-accent-dark: #7c2d12;
+      --color-bg-gradient: linear-gradient(135deg, #fffbeb 0%, #fff7ed 50%, #fef3c7 100%);
+      --color-gray-50: #f9fafb;
+      --color-gray-100: #f3f4f6;
+      --color-gray-200: #e5e7eb;
+      --color-gray-300: #d1d5db;
+      --color-gray-400: #9ca3af;
+      --color-gray-500: #6b7280;
+      --color-gray-600: #4b5563;
+      --color-gray-700: #374151;
+      --color-gray-800: #1f2937;
+      --color-gray-900: #111827;
+      
+      --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-family);
+      background: #fefaf0;
+      color: var(--color-gray-800);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Typography & Structural Layouts */
+    h1, h2, h3, h4 {
+      font-weight: 700;
+      color: var(--color-accent-dark);
+    }
+
+    p {
+      color: var(--color-gray-600);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 64rem; /* 1024px */
+      margin: 0 auto;
+      padding: 1.25rem;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* SLS Responsive Framework Grid Utilities */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(17.5rem, 1fr));
+      gap: 1.5rem;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
+      gap: 1rem;
+    }
+
+    /* Cards, Panels & Interactive States */
+    .card {
+      background: #ffffff;
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(245, 158, 11, 0.15);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card-interactive:hover {
+      transform: translateY(-0.2rem);
+      box-shadow: 0 10px 15px -3px rgba(180, 83, 9, 0.1), 0 4px 6px -2px rgba(180, 83, 9, 0.05);
+    }
+
+    /* Interactive Adaptive Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 0.75rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      outline: none;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary-dark);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-accent);
+    }
+
+    .btn-secondary {
+      background-color: #ffffff;
+      color: var(--color-primary-dark);
+      border: 2px solid var(--color-primary-dark);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--color-primary-light);
+    }
+
+    .btn-ghost {
+      background-color: transparent;
+      color: #ffffff;
+      border: 1px solid transparent;
+    }
+
+    .btn-ghost:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-outline {
+      background-color: transparent;
+      border: 1.5px solid var(--color-gray-300);
+      color: var(--color-gray-600);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--color-gray-100);
+      border-color: var(--color-gray-400);
+    }
+
+    .btn-disabled {
+      background-color: var(--color-gray-200);
+      color: var(--color-gray-400);
+      cursor: not-allowed;
+    }
+
+    /* Header Navigation bar */
+    header {
+      background-color: var(--color-primary-dark);
+      color: #ffffff;
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    .header-content {
+      max-width: 64rem;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    /* Views Engine Controller */
+    .view {
+      display: none;
+      animation: fadeIn 0.35s ease-out;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(0.5rem); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Home Hero View Styling (image_23b98e.png replica layout) */
+    .home-hero-container {
+      text-align: center;
+      padding: 3rem 1rem 1.5rem 1rem;
+    }
+
+    .home-avatar-circle {
+      background-color: #d97706;
+      width: 5.5rem;
+      height: 5.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 2rem auto;
+      box-shadow: 0 10px 25px rgba(217, 119, 6, 0.3);
+    }
+
+    .home-main-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #78350f;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.025em;
+    }
+
+    .home-main-subtitle {
+      font-size: 1.2rem;
+      color: #b45309;
+      max-width: 44rem;
+      margin: 0 auto 3rem auto;
+      line-height: 1.6;
+    }
+
+    /* Direct Navigation Cards */
+    .home-cards-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+      gap: 1.75rem;
+      max-width: 52rem;
+      margin: 0 auto 3rem auto;
+    }
+
+    .home-action-card {
+      border-radius: 1.75rem;
+      padding: 2.25rem 2rem;
+      color: #ffffff;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 24rem;
+      box-shadow: 0 12px 20px -8px rgba(0, 0, 0, 0.15);
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+      text-decoration: none;
+    }
+
+    .home-action-card:hover {
+      transform: translateY(-0.35rem);
+    }
+
+    .home-card-orange {
+      background-color: #d97706;
+    }
+
+    .home-card-orange:hover {
+      box-shadow: 0 15px 30px rgba(217, 119, 6, 0.35);
+    }
+
+    .home-card-rust {
+      background-color: #c2410c;
+    }
+
+    .home-card-rust:hover {
+      box-shadow: 0 15px 30px rgba(194, 65, 12, 0.35);
+    }
+
+    .home-card-icon-wrapper {
+      background-color: rgba(255, 255, 255, 0.18);
+      width: 4.5rem;
+      height: 4.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .home-card-title {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 0.75rem;
+    }
+
+    .home-card-desc {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 1.5rem;
+    }
+
+    .home-card-action-text {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Pill Badges style */
+    .home-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+      max-width: 52rem;
+      margin: 0 auto;
+    }
+
+    .home-pill-badge {
+      background-color: #ffffff;
+      border: 1.5px solid #fed7aa;
+      border-radius: 9999px;
+      padding: 0.5rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #78350f;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Experiment Step Progress and Metadata */
+    .step-progress-container {
+      margin-bottom: 1.5rem;
+    }
+
+    .step-bars {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .step-bar {
+      height: 0.5rem;
+      flex-grow: 1;
+      border-radius: 9999px;
+      background-color: var(--color-gray-200);
+      transition: background-color 0.3s ease;
+    }
+
+    .step-bar.filled {
+      background-color: var(--color-primary-medium);
+    }
+
+    .step-bar.active {
+      background-color: var(--color-accent);
+    }
+
+    /* Multi-Option Selector Cards */
+    .selection-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(13.75rem, 1fr));
+      gap: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .selection-card {
+      border: 2px solid var(--color-gray-200);
+      border-radius: 1.25rem;
+      padding: 1.5rem;
+      cursor: pointer;
+      background: #ffffff;
+      transition: all 0.2s ease;
+      position: relative;
+      text-align: left;
+    }
+
+    .selection-card:hover:not(.locked) {
+      border-color: var(--color-primary-medium);
+      transform: scale(1.02);
+    }
+
+    .selection-card.selected {
+      border-color: var(--color-primary-dark);
+      background-color: var(--color-primary-light);
+    }
+
+    .badge-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.15rem 0.6rem;
+      border-radius: 9999px;
+      margin-bottom: 0.75rem;
+    }
+
+    .tag-blue { background-color: #dbeafe; color: #1e40af; }
+    .tag-yellow { background-color: #fef9c3; color: #854d0e; }
+    .tag-orange { background-color: #ffedd5; color: #9a3412; }
+    .tag-red { background-color: #fee2e2; color: #991b1b; }
+
+    /* Interactive Panade Stirring Game Frame */
+    .pan-visualizer {
+      position: relative;
+      width: 16rem;
+      height: 10rem;
+      background-color: var(--color-gray-800);
+      border-bottom-left-radius: 5rem;
+      border-bottom-right-radius: 5rem;
+      border-top-left-radius: 0.5rem;
+      border-top-right-radius: 0.5rem;
+      border: 4px solid var(--color-gray-600);
+      margin: 2rem auto;
+      overflow: hidden;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.25);
+    }
+
+    .pan-liquid {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s ease;
+    }
+
+    .pan-spoon {
+      position: absolute;
+      font-size: 2.25rem;
+      top: 25%;
+      left: 45%;
+      transform-origin: center;
+      animation: stirAnimation 0.5s infinite ease-in-out alternate paused;
+    }
+
+    .pan-spoon.stirring {
+      animation-play-state: running;
+    }
+
+    @keyframes stirAnimation {
+      0% { transform: rotate(0deg) translate(-0.75rem, -0.3rem); }
+      100% { transform: rotate(20deg) translate(0.75rem, 0.3rem); }
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 1rem;
+      background-color: var(--color-gray-200);
+      border-radius: 9999px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background-color: var(--color-primary-medium);
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    /* Saturated and locked states */
+    .selection-card.locked {
+      background-color: var(--color-gray-100);
+      border-color: var(--color-gray-200);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .lock-icon-container {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background-color: #fee2e2;
+      border-radius: 50%;
+      padding: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Cooking Animation Overlay Screen */
+    .cooking-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .cooking-modal {
+      background: #ffffff;
+      border-radius: 1.5rem;
+      padding: 2.25rem;
+      max-width: 22rem;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .expanding-dough-container {
+      position: relative;
+      width: 13.75rem;
+      height: 13.75rem;
+      margin: 1.5rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .baking-glow {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.3) 0%, transparent 70%);
+      animation: pulseGlow 1.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(0.9); opacity: 0.4; }
+      50% { transform: scale(1.1); opacity: 0.9; }
+    }
+
+    .dough-ball {
+      position: absolute;
+      transition: width 1.6s ease-out, height 1.6s ease-out, background-color 1.6s ease-out, border-radius 1.6s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .steam-puff {
+      position: absolute;
+      font-size: 1.5rem;
+      opacity: 0;
+      z-index: 10;
+    }
+
+    @keyframes floatSteam0 {
+      0% { opacity: 0; transform: translateY(0) scale(0.5); }
+      50% { opacity: 0.8; }
+      100% { opacity: 0; transform: translateY(-70px) scale(1.3) translateX(-15px); }
+    }
+
+    @keyframes floatSteam1 {
+      0% { opacity: 0; transform: translateY(0) scale(0.5); }
+      50% { opacity: 0.8; }
+      100% { opacity: 0; transform: translateY(-80px) scale(1.3) translateX(0px); }
+    }
+
+    @keyframes floatSteam2 {
+      0% { opacity: 0; transform: translateY(0) scale(0.5); }
+      50% { opacity: 0.8; }
+      100% { opacity: 0; transform: translateY(-75px) scale(1.3) translateX(15px); }
+    }
+
+    /* Results Interface Metrics */
+    .metrics-header {
+      border-bottom: 2px dashed rgba(245, 158, 11, 0.2);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .results-recipe-sub-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.75rem;
+    }
+
+    @media (max-width: 600px) {
+      .results-recipe-sub-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .results-recipe-pill {
+      background-color: #fff7ed;
+      border: 1px solid #ffedd5;
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+    }
+
+    .results-recipe-pill-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .results-recipe-pill-val {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--color-gray-800);
+      margin-top: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .visualizer-pane {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 18.75rem;
+    }
+
+    .cross-section-graphic {
+      position: relative;
+      width: 13.75rem;
+      height: 13.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .metrics-row {
+      margin-bottom: 1rem;
+    }
+
+    .metrics-label-bar {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+
+    .metrics-track {
+      height: 0.6rem;
+      background-color: var(--color-gray-100);
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .metrics-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.7s ease-out;
+    }
+
+    /* Culinary Forensics Diagnostics Module */
+    .case-selectors {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .case-tab {
+      flex: 1;
+      padding: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      border: 2px solid var(--color-gray-200);
+      background-color: #ffffff;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .case-tab.active {
+      background-color: var(--color-accent);
+      border-color: var(--color-accent);
+      color: #ffffff;
+    }
+
+    .case-tab.solved {
+      border-color: #10b981;
+      color: #065f46;
+      background-color: #ecfdf5;
+    }
+
+    .failed-pastry-container {
+      background-color: #fffaf0;
+      border-radius: 1rem;
+      border: 2px dashed rgba(194, 65, 12, 0.2);
+      padding: 1.5rem;
+      text-align: center;
+      min-height: 12.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bakers-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    .bakers-table th, .bakers-table td {
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--color-gray-200);
+    }
+
+    .bakers-table th {
+      color: var(--color-gray-500);
+      font-weight: bold;
+    }
+
+    .bakers-table tr.highlight-error {
+      background-color: #fee2e2;
+      color: #991b1b;
+      font-weight: 600;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      padding: 1rem;
+      border: 2px solid var(--color-gray-200);
+      border-radius: 0.75rem;
+      background: #ffffff;
+      cursor: pointer;
+      margin-bottom: 0.75rem;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--color-primary-medium);
+      background-color: var(--color-primary-light);
+    }
+
+    .option-btn.selected {
+      border-color: var(--color-accent);
+      background-color: var(--color-primary-light);
+    }
+
+    .option-btn.correct {
+      border-color: #10b981 !important;
+      background-color: #ecfdf5 !important;
+      color: #065f46;
+    }
+
+    .option-btn.incorrect {
+      border-color: #f87171 !important;
+      background-color: #fef2f2 !important;
+      color: #991b1b;
+    }
+
+    .feedback-box {
+      margin-top: 1rem;
+      padding: 1.25rem;
+      border-radius: 0.75rem;
+      border: 2px solid transparent;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .feedback-box.correct {
+      border-color: #34d399;
+      background-color: #f0fdf4;
+      color: #166534;
+    }
+
+    .feedback-box.incorrect {
+      border-color: #fca5a5;
+      background-color: #fdf2f2;
+      color: #991b1b;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Dynamic Global Navbar -->
+  <header style="display: none;">
+    <div class="header-content">
+      <!-- Dynamic header contents populated by updateHeader() -->
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ================= VIEW 1: HOME VIEW ================= -->
+    <div id="view-home" class="view active">
+      <div class="home-hero-container">
+        <div class="home-avatar-circle">
+          <!-- White Conical Flask SVG -->
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 3h12"/><path d="M12 3v14"/><path d="M9 9h6"/><path d="M10 3v6L4 19a2 2 0 0 0 1.6 3h12.8a2 2 0 0 0 1.6-3L14 9V3z"/>
+          </svg>
+        </div>
+        <h1 class="home-main-title">Choux Pastry STEM Lab</h1>
+        <p class="home-main-subtitle">
+          A virtual edible lab to explore the food science of choux pastry — steam expansion, starch gelatinization, and egg protein coagulation.
+        </p>
+      </div>
+
+      <!-- Action Choice Layout matching image_23b98e.png exactly -->
+      <div class="home-cards-wrapper">
+        <div class="home-action-card home-card-orange" onclick="startExperiment()">
+          <div class="home-card-icon-wrapper">
+            <!-- Beaker icon SVG matching image_251b69.png -->
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 6h10" />
+              <path d="M7 6v2M17 6v2" />
+              <path d="M9 6v12a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2V6" />
+              <path d="M9 13h6" />
+            </svg>
+          </div>
+          <h2 class="home-card-title">Start Experiment</h2>
+          <p class="home-card-desc">
+            Follow the step-by-step Master Dough simulation. Mix, bake, and see your Pastry Profile.
+          </p>
+          <span class="home-card-action-text">Begin &gt;</span>
+        </div>
+
+        <div class="home-action-card home-card-rust" onclick="navigateTo('forensics')">
+          <div class="home-card-icon-wrapper">
+            <!-- Magnifying Glass icon SVG -->
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <h2 class="home-card-title">Culinary Forensics</h2>
+          <p class="home-card-desc">
+            Diagnose failed pastries. Use your science knowledge to identify and fix the error.
+          </p>
+          <span class="home-card-action-text">Investigate &gt;</span>
+        </div>
+      </div>
+
+      <!-- Footer pills matching bottom of image_23b98e.png -->
+      <div class="home-pills-row">
+        <div class="home-pill-badge">💨 1500× steam expansion</div>
+        <div class="home-pill-badge">🔬 Starch gelatinization</div>
+        <div class="home-pill-badge">🥚 Egg protein coagulation</div>
+      </div>
+    </div>
+
+
+    <!-- ================= VIEW 2: EXPERIMENT SYSTEM ================= -->
+    <div id="view-experiment" class="view">
+      
+      <!-- Responsive Step Header Indicator -->
+      <div class="step-progress-container">
+        <div class="step-bars" id="step-indicators-container">
+          <!-- Dynamic bars mapped here -->
+        </div>
+        <p id="step-number-text" style="font-size: 0.75rem; color: var(--color-gray-500); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;"></p>
+        <h2 id="step-title" style="margin-top: 0.25rem;"></h2>
+        <p id="step-subtitle" style="font-size: 0.9rem; margin-top: 0.25rem; color: var(--color-gray-500);"></p>
+      </div>
+
+      <div class="card" style="margin-bottom: 1.5rem;">
+        
+        <!-- STEP 1 PANEL: LIQUID BASE -->
+        <div id="panel-step-liquid" class="step-panel" style="display: none;">
+          <div class="selection-grid">
+            <div class="selection-card" onclick="selectLiquid('water')" id="card-liquid-water">
+              <span class="badge-tag tag-blue">Highest Rise</span>
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💧</div>
+              <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Water Base</h3>
+              <p style="font-size: 0.8rem; color: var(--color-gray-500); line-height: 1.4;">
+                High vapor pressure allows early, maximum expansion. Yields a light, crisp structure with a pale color.
+              </p>
+            </div>
+            <div class="selection-card" onclick="selectLiquid('milk')" id="card-liquid-milk">
+              <span class="badge-tag tag-yellow">Best Browning</span>
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🥛</div>
+              <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Whole Milk</h3>
+              <p style="font-size: 0.8rem; color: var(--color-gray-500); line-height: 1.4;">
+                Contains lactose and proteins which trigger browning (Maillard). Adds richness for a softer interior texture.
+              </p>
+            </div>
+            <div class="selection-card" onclick="selectLiquid('blend')" id="card-liquid-blend">
+              <span class="badge-tag tag-orange">Balanced</span>
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🫙</div>
+              <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">50/50 Blend</h3>
+              <p style="font-size: 0.8rem; color: var(--color-gray-500); line-height: 1.4;">
+                Balanced steam generation with a moderate protein matrix. Excellent overall color and internal hollow rise.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2 PANEL: MOISTURE EVAPORATION MINIGAME -->
+        <div id="panel-step-stir" class="step-panel" style="display: none; text-align: center;">
+          <h3 style="margin-bottom: 0.75rem;">Cook Moisture Off Raw Flour</h3>
+          
+          <div class="pan-visualizer">
+            <div id="stirring-liquid-layer" class="pan-liquid" style="height: 100%; background-color: #fce8e6;"></div>
+            <div id="pan-stirring-spoon" class="pan-spoon">🥄</div>
+          </div>
+
+          <div style="max-width: 25rem; margin: 0 auto 1.5rem auto;">
+            <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.25rem;">
+              <span>Stirring Progress</span>
+              <span id="stir-progress-val">0%</span>
+            </div>
+            <div class="progress-track">
+              <div id="stir-progress-fill" class="progress-fill"></div>
+            </div>
+            <p id="cooking-phase-label" style="font-size: 0.85rem; font-weight: bold; color: var(--color-primary-dark); margin-top: 0.25rem;">Heating panade mixture...</p>
+          </div>
+
+          <!-- Controlled Stirring Triggers -->
+          <div id="stir-controls" style="display: flex; gap: 0.75rem; justify-content: center; margin-bottom: 1.25rem;">
+            <button class="btn btn-primary" onclick="performStir()" style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 1rem; box-shadow: 0 4px 6px rgba(180,83,9,0.3);">🥄 Stir!</button>
+            <button id="btn-stop-early" class="btn btn-outline" onclick="stopStirringEarly()" style="display: none;">Stop Early</button>
+          </div>
+
+          <div id="stirring-end-message" style="display: none; max-width: 25rem; margin: 0 auto 1rem auto; padding: 0.75rem 1rem; border-radius: 0.75rem;" class="badge-tag"></div>
+
+          <!-- Custom Dynamic Completion Buttons (Stop Early "Try Again" / "Continue" matching screenshot style) -->
+          <div id="stirring-completed-actions" style="display: none; justify-content: center; gap: 0.75rem; margin-top: 1rem; align-items: center; margin-bottom: 1.5rem;">
+            <!-- Dynamically populated -->
+          </div>
+
+          <p id="stir-instruction-text" style="font-size: 0.8rem; max-width: 28rem; margin: 0 auto; color: var(--color-gray-500); line-height: 1.4;">
+            Click "Stir!" rapidly to dry the panade.
+          </p>
+        </div>
+
+        <!-- STEP 3 PANEL: EGG SELECTION -->
+        <div id="panel-step-eggs" class="step-panel" style="display: none;">
+          <div class="selection-grid" id="eggs-selection-grid">
+            
+            <div class="selection-card" onclick="selectEggs('low')" id="card-eggs-low">
+              <span class="badge-tag tag-orange">Standard Ratio</span>
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🥚</div>
+              <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Low Egg Count</h3>
+              <p style="font-size: 0.8rem; color: var(--color-gray-500); line-height: 1.4;">
+                2 eggs. Provides moderate structural support. Yields thicker, denser crumb walls with a smaller core cavity.
+              </p>
+            </div>
+            
+            <div class="selection-card" onclick="selectEggs('high')" id="card-eggs-high">
+              <span class="badge-tag tag-yellow" id="high-egg-badge">Maximum Cavity</span>
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🥚🥚🥚</div>
+              <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">High Egg Count</h3>
+              <p style="font-size: 0.8rem; color: var(--color-gray-500); line-height: 1.4;">
+                3-4 eggs. Strong albumin proteins create elastic, stretchable walls that hold massive expanding steam pockets.
+              </p>
+              
+              <!-- Dynamic Lock message panel for wet panade -->
+              <div class="lock-icon-container" id="high-egg-lock-icon" style="display: none;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <div id="high-egg-lock-text" style="display: none; margin-top: 0.5rem; font-size: 0.75rem; color: #dc2626; font-weight: bold; line-height: 1.2;">
+                🔒 Locked: Your panade is undercooked and too wet to absorb more egg liquid.
+              </div>
+            </div>
+
+          </div>
+          
+          <div id="eggs-step-warning" class="card" style="display: none; background-color: #fee2e2; border-color: #fca5a5; color: #991b1b; font-size: 0.85rem; padding: 1rem; margin-top: 1rem;">
+            🔒 <strong>High Egg is locked</strong> because your panade was underdried (saturated). A wet panade cannot absorb the additional egg proteins needed to form an expanding, strong hollow structure.
+          </div>
+        </div>
+
+        <!-- STEP 4 PANEL: THERMAL METHOD -->
+        <div id="panel-step-thermal" class="step-panel" style="display: none;">
+          <div class="selection-grid">
+            <div class="selection-card" onclick="selectThermal('bake')" id="card-thermal-bake">
+              <span class="badge-tag tag-orange">High Rise</span>
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔥</div>
+              <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Bake (Convection)</h3>
+              <p style="font-size: 0.8rem; color: var(--color-gray-500); line-height: 1.4;">
+                Convecting hot air circulates evenly. Internal moisture transforms to steam slowly, inflating a classic hollowed puff ball.
+              </p>
+            </div>
+            <div class="selection-card" onclick="selectThermal('fry')" id="card-thermal-fry">
+              <span class="badge-tag tag-yellow">Crisp Crumb</span>
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🫕</div>
+              <h3 style="font-size: 1.1rem; margin-bottom: 0.25rem;">Fry (Immersion)</h3>
+              <p style="font-size: 0.8rem; color: var(--color-gray-500); line-height: 1.4;">
+                Submerging in hot oil triggers instant crust seal. Internal moisture boiling forms highly porous, crisp churro ridges.
+              </p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Navigation buttons (Refined to align to right-side end; Back button removed as requested) -->
+      <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 2rem;">
+        <button id="btn-step-next" class="btn btn-primary" onclick="nextStep()">Continue →</button>
+      </div>
+    </div>
+
+
+    <!-- ================= VIEW 3: SIMULATION RESULTS (Screenshot 152928.png exact style) ================= -->
+    <div id="view-results" class="view">
+      
+      <!-- Card Panel: 📋 Your Recipe -->
+      <div class="card" style="margin-bottom: 1.5rem; border-color: #fed7aa; padding: 1.25rem;">
+        <h3 style="font-size: 1.1rem; color: #78350f; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+          <span>📋</span> Your Recipe
+        </h3>
+        <div class="results-recipe-sub-grid" id="recipe-badges-container">
+          <!-- Dynamically populated column elements of Recipe metrics -->
+        </div>
+      </div>
+
+      <!-- Split Graphic & Radar Layout matching Screenshot 152928.png -->
+      <div class="grid-2" style="margin-bottom: 1.5rem;">
+        
+        <!-- Left: Cross-Section View -->
+        <div class="card visualizer-pane" style="background-color: #ffffff; border-color: #e5e7eb;">
+          <p style="font-size: 0.75rem; color: var(--color-gray-400); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 2rem;">CROSS-SECTION VIEW</p>
+          
+          <div class="cross-section-graphic" id="results-cross-section" style="margin-bottom: 1.5rem;">
+            <!-- Rendered beautifully via JS -->
+          </div>
+          
+          <p id="shape-classification" style="font-size: 1rem; font-weight: 700; color: #b45309; text-align: center;"></p>
+        </div>
+
+        <!-- Right: Pastry Profile -->
+        <div class="card visualizer-pane" style="background-color: #ffffff; border-color: #e5e7eb;">
+          <h3 style="font-size: 1.15rem; color: #1e3a8a; display: flex; align-items: center; gap: 0.5rem; width: 100%; margin-bottom: 1rem;">
+            <span>❄️</span> Pastry Profile
+          </h3>
+          <div id="radar-chart-container" style="width: 100%; display: flex; align-items: center; justify-content: center; min-height: 14rem;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Detailed Metrics Progress Bars -->
+      <div class="card" style="margin-bottom: 1.5rem; border-color: #e5e7eb; padding: 1.5rem;">
+        <h3 style="font-size: 1.15rem; color: #1e3a8a; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem;">
+          <span>📊</span> Detailed Metrics
+        </h3>
+        <div id="profile-metrics-list" style="display: flex; flex-direction: column; gap: 1rem;">
+          <!-- Custom dynamic progress rows -->
+        </div>
+      </div>
+
+      <!-- Solid orange science explanation block matching footer box perfectly -->
+      <div class="card" style="background-color: #b45309; color: #ffffff; border: none; padding: 1.75rem; border-radius: 1.5rem;">
+        <h3 style="color: #ffffff; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; font-size: 1.2rem;">
+          <span>🔬</span> Scientific Analysis
+        </h3>
+        <p id="science-narrative" style="font-size: 0.925rem; line-height: 1.6; color: #ffedd5; font-weight: 500;"></p>
+      </div>
+
+    </div>
+
+
+    <!-- ================= VIEW 4: CULINARY DIAGNOSTICS ================= -->
+    <div id="view-forensics" class="view">
+      
+      <!-- Scenario indicators tabs -->
+      <div class="case-selectors" id="case-tabs-container">
+        <!-- Loaded via JS dynamically -->
+      </div>
+
+      <!-- Structural analysis area -->
+      <div class="grid-2" style="margin-bottom: 1.5rem;">
+        
+        <!-- Pastry physical description -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <h3 id="case-title" style="margin-bottom: 0.25rem;"></h3>
+            <p style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; color: var(--color-accent); margin-bottom: 0.75rem;" id="case-header-sub"></p>
+            
+            <div class="failed-pastry-container" id="failed-pastry-render" style="margin-bottom: 1rem;">
+              <!-- Failure vector rendering -->
+            </div>
+            
+            <div style="margin-top: 0.75rem;">
+              <h4 style="font-size: 0.85rem; color: var(--color-gray-700); margin-bottom: 0.25rem;">🧪 Forensic Description</h4>
+              <p id="case-description" style="font-size: 0.85rem; line-height: 1.5; color: var(--color-gray-600); background-color: #fff7ed; padding: 0.75rem; border-radius: 0.75rem; border: 1px solid rgba(245, 158, 11, 0.15);"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Physical Kitchen records logs -->
+        <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary-dark)" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+              <h3 style="font-size: 1rem; color: var(--color-accent-dark);">Bakers' Physical Kitchen Log</h3>
+            </div>
+            
+            <table class="bakers-table">
+              <thead>
+                <tr>
+                  <th>Observation Variable</th>
+                  <th>Recorded State</th>
+                </tr>
+              </thead>
+              <tbody id="bakers-log-table">
+                <!-- Kitchen entries loaded via JS -->
+              </tbody>
+            </table>
+          </div>
+          <div style="font-size: 0.8rem; color: var(--color-gray-500); padding-top: 1rem; line-height: 1.4;">
+            💡 Look for highlighted warnings ⚠️ in the logs above to identify the root chemical/physical breakdown.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Action items checklist selector -->
+      <div class="card" style="margin-bottom: 2rem;">
+        <h3 style="margin-bottom: 1rem; font-size: 1.1rem;">🛠️ Select Corrective Checklist Action</h3>
+        
+        <div id="forensic-options-container">
+          <!-- Option checkboxes -->
+        </div>
+
+        <!-- Custom feedback alert overlays -->
+        <div id="forensic-feedback" class="feedback-box">
+          <!-- Response status injected here -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 1.25rem; gap: 0.5rem;" id="forensic-nav-footer">
+          <!-- Injected dynamically -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Baking/Frying Expansion Overlay Window -->
+  <div class="cooking-overlay" id="animation-baking-overlay">
+    <div class="cooking-modal">
+      <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+        <span id="cooking-icon" style="font-size: 1.5rem;">🔥</span>
+        <h3 style="color: var(--color-accent);" id="cooking-modal-title">Baking Master Dough</h3>
+      </div>
+      <p style="font-size: 0.8rem; color: var(--color-gray-500);" id="cooking-modal-sub"></p>
+      
+      <div class="expanding-dough-container">
+        <div class="baking-glow"></div>
+        <!-- Raw Dough Ball SVG -->
+        <div class="dough-ball" id="animating-dough-element" style="width: 50px; height: 40px; background-color: #f3cb85; border-radius: 50%; box-shadow: 0 4px 24px rgba(0,0,0,0.2);"></div>
+        <!-- Animated steam emitters -->
+        <div class="steam-puff" id="steam-puff-0" style="left: 30%; top: 40%;">💨</div>
+        <div class="steam-puff" id="steam-puff-1" style="left: 50%; top: 35%;">💨</div>
+        <div class="steam-puff" id="steam-puff-2" style="left: 70%; top: 40%;">💨</div>
+      </div>
+      
+      <p id="cooking-anim-caption" style="font-size: 0.9rem; font-weight: bold; margin-top: 1rem; color: var(--color-accent-dark);"></p>
+      
+      <div id="cooking-nav-tip" style="display: none; margin-top: 1rem; padding: 0.5rem; background-color: #fff7ed; border: 1px solid #ffedd5; border-radius: 0.75rem;">
+        <p style="font-size: 0.8rem; font-weight: bold; color: var(--color-accent-dark);">Structure set!</p>
+        <p style="font-size: 0.77rem; color: var(--color-gray-500);">Navigating to your results...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Scripts Integration -->
+  <script>
+    // System Configurations (Imported from source file logic)
+    const STEPS_CONFIG = [
+      { id: "liquid", title: "Choose Your Liquid", subtitle: "Select the liquid base for your panade. This affects steam pressure and the Maillard reaction." },
+      { id: "stir", title: "Cook the Panade", subtitle: "Stir the mixture on the stovetop until a starch film forms. Don't stop too early!" },
+      { id: "eggs", title: "Add Eggs", subtitle: "Choose how many eggs to incorporate. The panade's dryness determines how many it can absorb." },
+      { id: "thermal", title: "Select Heat Method", subtitle: "Decide how you'll cook the choux. Baking and frying produce very different results." }
+    ];
+
+    const FORENSICS_SCENARIOS = [
+      {
+        id: "collapse",
+        title: "The Phantom Collapse",
+        failureType: "collapsed",
+        headerSub: "Defect: Rigid Shell Weakens, Implodes on Exit",
+        description: "The pastry was golden and tall in the oven but collapsed into a flat disc immediately upon removal. The interior walls appear moist and under-cooked.",
+        bakersLog: [
+          { variable: "Liquid Base", value: "Whole Milk" },
+          { variable: "Panade", value: "Dry (Starch film formed)" },
+          { variable: "Eggs", value: "High" },
+          { variable: "Oven Temp", value: "210°C for 10 min, then 150°C for 15 min" },
+          { variable: "Venting/Piercing", value: "None ⚠️", isError: true }
+        ],
+        options: [
+          { id: "A", text: "Increase the amount of milk in the initial liquid base.", correct: false, feedback: "Incorrect. Adding more milk would increase moisture and decrease crispiness further, making collapse more likely." },
+          { id: "B", text: "Pierce the base of the pastry and return to the oven for 5 minutes (venting).", correct: true, feedback: "Correct! Piercing allows residual steam to escape. This prevents the steam from condensing back into water droplets, which softens and collapses the protein wall matrix." },
+          { id: "C", text: "Skip the stovetop stirring phase to keep the dough as wet as possible.", correct: false, feedback: "Incorrect. This would result in an underdried panade with poor absorption capacity for eggs, weakening structural strength." }
+        ]
+      },
+      {
+        id: "flat",
+        title: "The Flat Disc",
+        failureType: "flat",
+        headerSub: "Defect: Under-evaporated Panade Fails to Trap Gas",
+        description: "The piped dough spread sideways in the oven and never rose. The result is a flat, pale disc with no internal cavity. It looks more like a cookie than a choux.",
+        bakersLog: [
+          { variable: "Liquid Base", value: "Water" },
+          { variable: "Panade", value: "Saturated/Wet (Under-dried) ⚠️", isError: true },
+          { variable: "Eggs", value: "High (forced)" },
+          { variable: "Oven Temp", value: "200°C for 25 min" },
+          { variable: "Venting/Piercing", value: "Yes" }
+        ],
+        options: [
+          { id: "A", text: "Increase oven temperature to 230°C.", correct: false, feedback: "Incorrect. The problem is not the temperature — it's the wet panade. Higher heat cannot compensate for a structurally weak dough." },
+          { id: "B", text: "Add more flour to the mixture to thicken the batter.", correct: false, feedback: "Incorrect. Extra raw flour ruins proper starch swelling and gelatinization ratios." },
+          { id: "C", text: "Dry the panade properly on the stove until a starch film forms before adding eggs.", correct: true, feedback: "Correct! A properly dried panade (where moisture is cooked off until a starch film coats the pan) can incorporate egg proteins effectively, forming the structural boundary needed to trap expansion gas." }
+        ]
+      },
+      {
+        id: "cracked",
+        title: "The Cracked Shell",
+        failureType: "cracked",
+        headerSub: "Defect: Premature Surface Dryout Splits Outer Walls",
+        description: "The pastry rose well but developed deep, irregular cracks on the surface. The crust is thick in some areas and paper-thin in others. The interior is partially hollow.",
+        bakersLog: [
+          { variable: "Liquid Base", value: "Water" },
+          { variable: "Panade", value: "Dry (Starch film formed)" },
+          { variable: "Eggs", value: "High" },
+          { variable: "Oven Temp", value: "240°C throughout ⚠️", isError: true },
+          { variable: "Venting/Piercing", value: "Yes" }
+        ],
+        options: [
+          { id: "A", text: "Switch to whole milk to add fat and reduce surface tension.", correct: false, feedback: "Incorrect. While milk does soften the crust, the primary cause of irregular cracking is excessive heat shock causing uneven steam bursts — not the liquid type." },
+          { id: "B", text: "Reduce oven temperature to 190–200°C for a controlled, even rise.", correct: true, feedback: "Correct! At 240°C, the outer shell sets too quickly before internal steam can expand evenly. Reducing heat to 190–200°C allows steam to build gradually and expand the shell uniformly." },
+          { id: "C", text: "Use low egg count to reduce the internal steam pressure.", correct: false, feedback: "Incorrect. Reducing eggs would weaken the walls and cavity, but fails to correct the surface cracking caused by excessive thermal convection." }
+        ]
+      }
+    ];
+
+    // Live State Controllers
+    let appState = {
+      activeView: "home",
+      experiment: {
+        step: 0,
+        liquid: "water",
+        panadeWet: false,
+        eggs: "low",
+        thermalPhase: "bake",
+        clicks: 0
+      },
+      forensics: {
+        activeCaseIdx: 0,
+        selectedOption: null,
+        feedbackGiven: false,
+        solved: {} // scenarioId -> boolean
+      }
+    };
+
+    // Load Forensic Progress from Local Storage (SLS Compliant Sandbox fallbacks)
+    try {
+      const stored = localStorage.getItem("forensicsProgress");
+      if (stored) {
+        appState.forensics.solved = JSON.parse(stored);
+      }
+    } catch(e) {
+      console.warn("Storage restricted in sandboxed SLS iframe; using in-memory progress states.");
+    }
+
+    // Dynamic Header Engine (Matches Screenshot specifications perfectly)
+    function updateHeader() {
+      const header = document.querySelector('header');
+      const headerContent = document.querySelector('header .header-content');
+      if (!headerContent || !header) return;
+      
+      const solvedCount = Object.values(appState.forensics.solved).filter(Boolean).length;
+      
+      if (appState.activeView === 'home') {
+        header.style.display = 'none'; // Hides header totally on home page
+      } else {
+        header.style.display = 'block';
+        
+        if (appState.activeView === 'experiment') {
+          // Matches Screenshot 2026-05-19 151144.png perfectly
+          headerContent.innerHTML = `
+            <div class="header-title" style="cursor: default; user-select: none;">
+              <div onclick="navigateTo('home')" style="display: flex; align-items: center; cursor: pointer; margin-right: 0.5rem;" title="Back to Home">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><path d="M6 3h12"/><path d="M12 3v14"/><path d="M9 9h6"/><path d="M10 3v6L4 19a2 2 0 0 0 1.6 3h12.8a2 2 0 0 0 1.6-3L14 9V3z"/></svg>
+              <span>Master Dough Simulation</span>
+            </div>
+            <button class="btn btn-ghost" onclick="startExperiment()" style="font-size: 1rem; font-weight: 600; padding: 0.25rem 0.5rem; display: flex; align-items: center; gap: 0.35rem; color: #ffffff;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              Reset
+            </button>
+          `;
+        } else if (appState.activeView === 'forensics') {
+          // Matches Screenshot 2026-05-19 151155.png perfectly
+          headerContent.innerHTML = `
+            <div class="header-title" style="cursor: default; user-select: none;">
+              <div onclick="navigateTo('home')" style="display: flex; align-items: center; cursor: pointer; margin-right: 0.5rem;" title="Back to Home">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <span>Culinary Forensics</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <span style="font-size: 0.95rem; color: rgba(255, 255, 255, 0.9); font-weight: 600;">${solvedCount}/${FORENSICS_SCENARIOS.length} solved</span>
+              <button class="btn btn-ghost" onclick="resetAllForensics()" style="font-size: 1rem; font-weight: 600; padding: 0.25rem 0.5rem; display: flex; align-items: center; gap: 0.35rem; color: #ffffff;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                Reset
+              </button>
+            </div>
+          `;
+        } else if (appState.activeView === 'results') {
+          // Styled similarly to Screenshot 2026-05-19 152928.png
+          headerContent.innerHTML = `
+            <div class="header-title" style="cursor: default; user-select: none;">
+              <div onclick="navigateTo('experiment')" style="display: flex; align-items: center; cursor: pointer; margin-right: 0.5rem;" title="Back to Experiment">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+              </div>
+              <span>Pastry Profile Results</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <button class="btn btn-outline" onclick="navigateTo('forensics')" style="font-size: 0.85rem; padding: 0.4rem 0.8rem; background-color: rgba(255, 255, 255, 0.15); border: 1.5px solid rgba(255, 255, 255, 0.3); color: white; display: flex; align-items: center; gap: 0.25rem; border-radius: 0.5rem; cursor: pointer;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg> Forensics
+              </button>
+              <button class="btn btn-ghost" onclick="startExperiment()" style="font-size: 0.95rem; font-weight: 600; padding: 0.4rem 0.6rem; display: flex; align-items: center; gap: 0.35rem; color: #ffffff;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                Try Again
+              </button>
+            </div>
+          `;
+        }
+      }
+    }
+
+    // Router View Switcher
+    function navigateTo(viewId) {
+      appState.activeView = viewId;
+      document.querySelectorAll('.view').forEach(view => {
+        view.classList.remove('active');
+      });
+      document.getElementById(`view-${viewId}`).classList.add('active');
+      window.scrollTo(0, 0);
+      updateHeader();
+
+      if (viewId === "forensics") {
+        renderForensicsCase();
+      }
+    }
+
+    function updateForensicsBadge() {
+      updateHeader();
+    }
+
+    // Experiment Setup Init
+    function startExperiment() {
+      appState.experiment = {
+        step: 0,
+        liquid: "water",
+        panadeWet: false,
+        eggs: "low",
+        thermalPhase: "bake",
+        clicks: 0
+      };
+      navigateTo("experiment");
+      renderExperimentStep();
+    }
+
+    function renderExperimentStep() {
+      const currentStepIdx = appState.experiment.step;
+      const stepConfig = STEPS_CONFIG[currentStepIdx];
+
+      // Step Header updates
+      document.getElementById("step-number-text").innerText = `Step ${currentStepIdx + 1} of 4`;
+      document.getElementById("step-title").innerText = stepConfig.title;
+      document.getElementById("step-subtitle").innerText = stepConfig.subtitle;
+
+      // Render step indicators
+      const indicatorsContainer = document.getElementById("step-indicators-container");
+      indicatorsContainer.innerHTML = "";
+      for (let i = 0; i < 4; i++) {
+        const bar = document.createElement("div");
+        bar.className = "step-bar";
+        if (i < currentStepIdx) {
+          bar.className = "step-bar filled";
+        } else if (i === currentStepIdx) {
+          bar.className = "step-bar active";
+        }
+        indicatorsContainer.appendChild(bar);
+      }
+
+      // Hide all panels
+      document.querySelectorAll(".step-panel").forEach(p => p.style.display = "none");
+
+      // Show targeted step configuration panel
+      if (stepConfig.id === "liquid") {
+        document.getElementById("panel-step-liquid").style.display = "block";
+        updateLiquidSelectionUI();
+      } else if (stepConfig.id === "stir") {
+        document.getElementById("panel-step-stir").style.display = "block";
+        resetStirringMiniGame();
+      } else if (stepConfig.id === "eggs") {
+        document.getElementById("panel-step-eggs").style.display = "block";
+        updateEggsSelectionUI();
+      } else if (stepConfig.id === "thermal") {
+        document.getElementById("panel-step-thermal").style.display = "block";
+        updateThermalSelectionUI();
+      }
+
+      // Render Footer Nav Controls (Next/Continue button only, Back button removed safely)
+      const nextBtn = document.getElementById("btn-step-next");
+
+      // Minigame has custom buttons for next panel
+      if (stepConfig.id === "stir") {
+        nextBtn.style.display = "none";
+      } else {
+        nextBtn.style.display = "block";
+        if (currentStepIdx === 3) {
+          nextBtn.innerText = appState.experiment.thermalPhase === "fry" ? "🔥 Fry It!" : "🔥 Bake It!";
+        } else {
+          nextBtn.innerText = "Next →";
+        }
+      }
+    }
+
+    function prevStep() {
+      if (appState.experiment.step > 0) {
+        appState.experiment.step--;
+        renderExperimentStep();
+      }
+    }
+
+    // Main step advance function
+    function nextStep() {
+      if (appState.experiment.step === 3) {
+        runCookingAnimation();
+      } else {
+        appState.experiment.step++;
+        renderExperimentStep();
+      }
+    }
+
+    // Liquid selection trigger
+    function selectLiquid(liquidId) {
+      appState.experiment.liquid = liquidId;
+      updateLiquidSelectionUI();
+    }
+
+    function updateLiquidSelectionUI() {
+      document.querySelectorAll("#panel-step-liquid .selection-card").forEach(card => {
+        card.classList.remove("selected");
+      });
+      document.getElementById(`card-liquid-${appState.experiment.liquid}`).classList.add("selected");
+    }
+
+    // Stirring Panade Minigame
+    function resetStirringMiniGame() {
+      appState.experiment.clicks = 0;
+      updateStirringProgressUI();
+      document.getElementById("stir-controls").style.display = "flex";
+      document.getElementById("stirring-end-message").style.display = "none";
+      document.getElementById("stirring-completed-actions").style.display = "none"; // Hides custom completed layout
+      document.getElementById("btn-stop-early").style.display = "none";
+      
+      // Setup active "Stir!" helper instructions
+      document.getElementById("stir-instruction-text").innerText = 'Click "Stir!" rapidly to dry the panade.';
+    }
+
+    function performStir() {
+      appState.experiment.clicks++;
+      updateStirringProgressUI();
+
+      if (appState.experiment.clicks >= 20) {
+        appState.experiment.panadeWet = false;
+        completeStirringMiniGame(false);
+      }
+    }
+
+    function stopStirringEarly() {
+      appState.experiment.panadeWet = true;
+      completeStirringMiniGame(true);
+    }
+
+    function updateStirringProgressUI() {
+      const clicks = appState.experiment.clicks;
+      const progress = Math.min(100, (clicks / 20) * 100);
+
+      // DOM updates
+      document.getElementById("stir-progress-fill").style.width = `${progress}%`;
+      document.getElementById("stir-progress-val").innerText = `${Math.round(progress)}%`;
+
+      // Evaporation color & liquid height styling
+      const liquidLevel = 20 + (progress * 0.6); // Shrinks height profile
+      const stirringLiquid = document.getElementById("stirring-liquid-layer");
+      stirringLiquid.style.height = `${liquidLevel}%`;
+
+      const colorClass = clicks < 8 ? "#93c5fd" : clicks < 16 ? "#facc15" : "#f59e0b";
+      stirringLiquid.style.backgroundColor = colorClass;
+
+      const phaseLabelText = clicks < 8 ? "Mixture heating…" : clicks < 16 ? "Starch absorbing liquid…" : (clicks >= 20 ? "Starch film formed!" : "Starch film forming!");
+      document.getElementById("cooking-phase-label").innerText = phaseLabelText;
+
+      // Stir visual animation trigger
+      const spoon = document.getElementById("pan-stirring-spoon");
+      spoon.classList.add("stirring");
+      setTimeout(() => spoon.classList.remove("stirring"), 150);
+
+      // Handle Early Stop visibility
+      if (clicks > 0 && clicks < 20) {
+        document.getElementById("btn-stop-early").style.display = "inline-flex";
+      }
+    }
+
+    // Handles Step 2 Completion actions (Matches Screenshot 2026-05-19 154145.png beautifully)
+    function completeStirringMiniGame(isWet) {
+      document.getElementById("stir-controls").style.display = "none";
+      
+      const msgPanel = document.getElementById("stirring-end-message");
+      msgPanel.style.display = "block";
+
+      const actionsPanel = document.getElementById("stirring-completed-actions");
+      actionsPanel.style.display = "flex";
+      
+      if (isWet) {
+        msgPanel.className = "badge-tag tag-red";
+        msgPanel.style.fontSize = "0.9rem";
+        msgPanel.innerHTML = "⚠️ Panade is Saturated/Wet — High Egg option will be locked!";
+
+        // Inject Try Again outline button and solid golden orange Continue button
+        actionsPanel.innerHTML = `
+          <button class="btn btn-outline" onclick="resetStirringMiniGame()" style="background-color: #ffffff; border: 1.5px solid #d1d5db; color: #111827; padding: 0.6rem 1.5rem; font-size: 0.95rem; border-radius: 0.75rem; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">Try Again</button>
+          <button class="btn btn-primary" onclick="nextStep()" style="background-color: #d97706; color: #ffffff; padding: 0.6rem 1.75rem; font-size: 0.95rem; border-radius: 0.75rem; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; display: flex; align-items: center; gap: 0.25rem;">Continue →</button>
+        `;
+      } else {
+        msgPanel.className = "badge-tag tag-yellow";
+        msgPanel.style.fontSize = "0.9rem";
+        msgPanel.innerHTML = "✅ Starch film formed — Panade is dry and ready!";
+
+        // Same centered layout on dry success for interface consistency
+        actionsPanel.innerHTML = `
+          <button class="btn btn-outline" onclick="resetStirringMiniGame()" style="background-color: #ffffff; border: 1.5px solid #d1d5db; color: #111827; padding: 0.6rem 1.5rem; font-size: 0.95rem; border-radius: 0.75rem; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer;">Try Again</button>
+          <button class="btn btn-primary" onclick="nextStep()" style="background-color: #d97706; color: #ffffff; padding: 0.6rem 1.75rem; font-size: 0.95rem; border-radius: 0.75rem; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.05); cursor: pointer; display: flex; align-items: center; gap: 0.25rem;">Continue →</button>
+        `;
+      }
+
+      // Restore deep chemical feedback analysis text on step completion
+      document.getElementById("stir-instruction-text").innerText = "Gelatinized starches lock water networks. Cooking off moisture yields a dry panade capable of absorbing highly structural eggs. Stopping early leaves the mixture saturated.";
+
+      // Keep the global next button disabled to use the local inline buttons
+      const nextBtn = document.getElementById("btn-step-next");
+      nextBtn.style.display = "none";
+    }
+
+    // Eggs Selection Logic
+    function selectEggs(eggsVal) {
+      if (eggsVal === "high" && appState.experiment.panadeWet) {
+        return; // locked due to moisture saturation
+      }
+      appState.experiment.eggs = eggsVal;
+      updateEggsSelectionUI();
+    }
+
+    function updateEggsSelectionUI() {
+      const highEggCard = document.getElementById("card-eggs-high");
+      const highEggLockIcon = document.getElementById("high-egg-lock-icon");
+      const highEggLockText = document.getElementById("high-egg-lock-text");
+      const highEggBadge = document.getElementById("high-egg-badge");
+      const warningAlert = document.getElementById("eggs-step-warning");
+
+      if (appState.experiment.panadeWet) {
+        highEggCard.classList.add("locked");
+        highEggLockIcon.style.display = "flex";
+        highEggLockText.style.display = "block";
+        highEggBadge.className = "badge-tag tag-red";
+        highEggBadge.innerText = "🔒 Locked";
+        warningAlert.style.display = "block";
+        
+        if (appState.experiment.eggs === "high") {
+          appState.experiment.eggs = "low";
+        }
+      } else {
+        highEggCard.classList.remove("locked");
+        highEggLockIcon.style.display = "none";
+        highEggLockText.style.display = "none";
+        highEggBadge.className = "badge-tag tag-yellow";
+        highEggBadge.innerText = "Maximum Cavity";
+        warningAlert.style.display = "none";
+      }
+
+      document.querySelectorAll("#panel-step-eggs .selection-card").forEach(card => {
+        card.classList.remove("selected");
+      });
+      document.getElementById(`card-eggs-${appState.experiment.eggs}`).classList.add("selected");
+    }
+
+    // Thermal Selection Logic
+    function selectThermal(thermalId) {
+      appState.experiment.thermalPhase = thermalId;
+      updateThermalSelectionUI();
+    }
+
+    function updateThermalSelectionUI() {
+      document.querySelectorAll("#panel-step-thermal .selection-card").forEach(card => {
+        card.classList.remove("selected");
+      });
+      document.getElementById(`card-thermal-${appState.experiment.thermalPhase}`).classList.add("selected");
+      
+      // Update footer proceed action naming
+      const nextBtn = document.getElementById("btn-step-next");
+      nextBtn.innerText = appState.experiment.thermalPhase === "fry" ? "🔥 Fry It!" : "🔥 Bake It!";
+    }
+
+    // Cooking Overlay Visual Simulation Engine
+    function runCookingAnimation() {
+      const overlay = document.getElementById("animation-baking-overlay");
+      const title = document.getElementById("cooking-modal-title");
+      const sub = document.getElementById("cooking-modal-sub");
+      const caption = document.getElementById("cooking-anim-caption");
+      const dough = document.getElementById("animating-dough-element");
+      const navTip = document.getElementById("cooking-nav-tip");
+      const icon = document.getElementById("cooking-icon");
+
+      // Set Overlay Active
+      overlay.style.display = "flex";
+      navTip.style.display = "none";
+
+      const isFry = appState.experiment.thermalPhase === "fry";
+      const isWet = appState.experiment.panadeWet;
+      const isHighEggs = appState.experiment.eggs === "high";
+
+      icon.innerText = isFry ? "🫕" : "🔥";
+      title.innerText = isFry ? "Frying Master Dough..." : "Baking Master Dough...";
+      sub.innerText = isFry ? "Direct immersion frying - rapid heat transfer!" : "Convection roasting - hot air circulation!";
+
+      // Reset dough base style
+      dough.style.width = "50px";
+      dough.style.height = "40px";
+      dough.style.backgroundColor = "#f3cb85";
+      dough.style.borderRadius = "50%";
+
+      // Reset steam puff animation keyframes
+      for(let i=0; i<3; i++) {
+        const puff = document.getElementById(`steam-puff-${i}`);
+        puff.style.animation = "none";
+        puff.offsetHeight; // trigger reflow
+      }
+
+      caption.innerText = "Piping raw dough...";
+
+      // Step 1: Steam expansion
+      setTimeout(() => {
+        caption.innerText = isFry ? "Submerged! Instant surface bubbles forming..." : "Water base evaporating! Steam expanding ~1500× inside...";
+        
+        // Start Steam Puff Animations
+        for(let i=0; i<3; i++) {
+          const puff = document.getElementById(`steam-puff-${i}`);
+          puff.style.animation = `floatSteam${i} 1.2s infinite ease-out`;
+        }
+
+        // Apply scale expansion based on physics criteria
+        let targetW = 130;
+        let targetH = 110;
+        let borderRadius = "50%";
+
+        if (isWet) {
+          targetW = 180;
+          targetH = 35;
+          borderRadius = "8px";
+        } else if (isFry) {
+          targetW = 80;
+          targetH = 180;
+          borderRadius = "8px";
+        } else if (isHighEggs) {
+          targetW = 160;
+          targetH = 140;
+        }
+
+        dough.style.width = `${targetW}px`;
+        dough.style.height = `${targetH}px`;
+        dough.style.borderRadius = borderRadius;
+      }, 1000);
+
+      // Step 2: Browning and structural setting
+      setTimeout(() => {
+        caption.innerText = "Maillard reaction setting browning skin proteins...";
+        
+        // Determine final color based on liquid configuration
+        let shellColor = "#d4a84b";
+        if (appState.experiment.liquid === "milk") {
+          shellColor = "#92400e";
+        } else if (appState.experiment.liquid === "blend") {
+          shellColor = "#c8860a";
+        }
+        dough.style.backgroundColor = shellColor;
+      }, 2600);
+
+      // Step 3: Transition and navigation trigger
+      setTimeout(() => {
+        caption.innerText = "Structural network fully set!";
+        navTip.style.display = "block";
+      }, 3800);
+
+      setTimeout(() => {
+        overlay.style.display = "none";
+        generateSimulationResults();
+        navigateTo("results");
+      }, 4800);
+    }
+
+    // Mathematical Chemistry/Physics Evaluation Engine
+    function generateSimulationResults() {
+      const { liquid, panadeWet, eggs, thermalPhase } = appState.experiment;
+
+      let rise = 3, cavitySize = 3, porosity = 3, strength = 3, browning = 3, crispiness = 3, moistureContent = 3;
+
+      // LIQUID MATRIX SCIENCE
+      if (liquid === "water") {
+        rise += 1;
+        crispiness += 1;
+        browning -= 1;
+        moistureContent -= 1;
+      } else if (liquid === "milk") {
+        rise -= 1;
+        browning += 2;
+        crispiness -= 1;
+        moistureContent += 1;
+      } else if (liquid === "blend") {
+        browning += 1;
+      }
+
+      // PANADE WETNESS STRUCTURAL CRITERIA
+      if (panadeWet) {
+        rise -= 2;
+        cavitySize -= 2;
+        strength -= 2;
+        moistureContent += 2;
+      }
+
+      // PROTEIN MATRIX STRENGTH
+      if (eggs === "high" && !panadeWet) {
+        cavitySize += 2;
+        strength += 1;
+        rise += 1;
+      } else if (eggs === "low") {
+        cavitySize -= 1;
+        strength -= 1;
+      }
+
+      // THERMAL SETTING METHOD
+      if (thermalPhase === "fry") {
+        crispiness += 1;
+        porosity += 2;
+        moistureContent += 1;
+        cavitySize -= 1;
+      } else if (thermalPhase === "bake") {
+        rise += 1;
+        crispiness += 1;
+      }
+
+      const clamp = (v) => Math.min(5, Math.max(1, Math.round(v)));
+      const profile = {
+        rise: clamp(rise),
+        cavitySize: clamp(cavitySize),
+        porosity: clamp(porosity),
+        strength: clamp(strength),
+        browning: clamp(browning),
+        crispiness: clamp(crispiness),
+        moistureContent: clamp(moistureContent)
+      };
+
+      const shape = panadeWet ? "flat" : (thermalPhase === "fry" ? "churro" : (eggs === "high" ? "profiterole-large" : "profiterole"));
+      
+      const scienceNarrativeText = getScientificAnalysisText(appState.experiment);
+
+      // Cache results to local state for persistence
+      const resultsObj = { profile, shape, params: appState.experiment, description: scienceNarrativeText };
+      try {
+        localStorage.setItem("masterDoughResult", JSON.stringify(resultsObj));
+      } catch(e) {}
+
+      // Render Results panel visual interface
+      renderResultsDashboard(resultsObj);
+    }
+
+    function getScientificAnalysisText({ liquid, panadeWet, eggs, thermalPhase }) {
+      if (panadeWet) {
+        return "The under-dried panade lacked the absorptive capacity for sufficient egg proteins. The dough could not hold the steam, resulting in minimal expansion. Result: A flat, dense pastry with moist, underdeveloped walls.";
+      }
+      if (liquid === "water" && eggs === "high" && thermalPhase === "bake") {
+        return "The high vapor pressure of water combined with high albumin content created a 1500-fold steam expansion. Result: A light, crisp profiterole with a massive internal cavity and thin, structurally sound walls.";
+      }
+      if (liquid === "milk" && eggs === "low" && thermalPhase === "fry") {
+        return "The lactose in the milk triggered a rapid Maillard reaction on the surface. The frying created instant surface dehydration with a moist, dense interior. Result: A golden churro with a thick, rigid crust and minimal hollow.";
+      }
+      if (thermalPhase === "fry") {
+        return "Immersion frying caused rapid convective heat transfer and instant surface dehydration, creating a highly porous crumb. Result: A golden, crispy exterior with a moist and open interior.";
+      }
+      if (liquid === "milk") {
+        return "The milk's lactose and proteins promoted the Maillard reaction, yielding a deep golden-brown colour. The fats retained moisture in the walls. Result: A soft, flavourful pastry with moderate rise and a tender crumb.";
+      }
+      return "Balanced variables produced a well-structured choux pastry. The steam expanded the dough evenly, and egg proteins set the walls. Result: A hollow profiterole with a crisp shell and good structural integrity.";
+    }
+
+    function renderResultsDashboard(results) {
+      const { profile, shape, params, description } = results;
+
+      // Populating the 📋 Your Recipe badges (Cream colored capsules with exact borders as shown in screenshot)
+      const LIQUID_LABELS = { water: "💧 Water", milk: "🥛 Whole Milk", blend: "🫙 50/50 Blend" };
+      const EGG_LABELS = { low: "🥚 Low (2 eggs)", high: "🥚🥚🥚 High (3-4 eggs)" };
+      const THERMAL_LABELS = { bake: "🔥 Bake (Convection)", fry: "🫕 Fry (Immersion)" };
+      const PANADE_LABEL = params.panadeWet 
+        ? `<span style="color: #b45309">⚠️ Saturated/Wet</span>` 
+        : `<span style="color: #166534">✅ Dry</span>`;
+
+      const badgesContainer = document.getElementById("recipe-badges-container");
+      badgesContainer.innerHTML = `
+        <div class="results-recipe-pill">
+          <div class="results-recipe-pill-title">LIQUID</div>
+          <div class="results-recipe-pill-val">${LIQUID_LABELS[params.liquid]}</div>
+        </div>
+        <div class="results-recipe-pill">
+          <div class="results-recipe-pill-title">PANADE</div>
+          <div class="results-recipe-pill-val">${PANADE_LABEL}</div>
+        </div>
+        <div class="results-recipe-pill">
+          <div class="results-recipe-pill-title">EGGS</div>
+          <div class="results-recipe-pill-val">${EGG_LABELS[params.eggs]}</div>
+        </div>
+        <div class="results-recipe-pill">
+          <div class="results-recipe-pill-title">HEAT</div>
+          <div class="results-recipe-pill-val">${THERMAL_LABELS[params.thermalPhase]}</div>
+        </div>
+      `;
+
+      // Render Cross section display
+      renderCrossSectionGraphic(shape, profile.browning);
+
+      // Render custom SVG radar chart
+      renderRadarChartGraphic(profile);
+
+      // Render evaluations metrics bars with colors corresponding to ratings from screenshot
+      const metricsDefinitions = [
+        { key: "rise", name: "Rise", icon: "📈", desc: "Vertical expansion from steam leavening" },
+        { key: "cavitySize", name: "Cavity Size", icon: "🕳️", desc: "Volume of the internal hollow" },
+        { key: "porosity", name: "Porosity", icon: "🫧", desc: "Small air pockets in the pastry walls" },
+        { key: "strength", name: "Strength", icon: "💪", desc: "Structural integrity & resistance to collapse" },
+        { key: "browning", name: "Browning", icon: "🟤", desc: "Intensity of the Maillard reaction" },
+        { key: "crispiness", name: "Crispiness", icon: "🥐", desc: "Surface dehydration and brittleness" },
+        { key: "moisture", name: "Moisture", icon: "💧", desc: "Residual hydration in the walls" } // Map key "moistureContent" to "moisture" smoothly
+      ];
+
+      // Fix missing map key smoothly
+      const getProfileValue = (key) => {
+        if (key === "moisture") return profile.moistureContent;
+        return profile[key];
+      };
+
+      const metricsList = document.getElementById("profile-metrics-list");
+      metricsList.innerHTML = "";
+      metricsDefinitions.forEach(m => {
+        const val = getProfileValue(m.key);
+        const pct = ((val - 1) / 4) * 100; // Maps ratings (1-5) to progress bar width percentage
+
+        // Screenshot-matching color thresholds: 1/2 Red, 3 Orange, 4/5 Green
+        let barColor = "#10b981"; // Green
+        if (val === 3) barColor = "#f59e0b"; // Orange
+        else if (val <= 2) barColor = "#f87171"; // Coral Red
+
+        const row = document.createElement("div");
+        row.style.display = "flex";
+        row.style.alignItems = "center";
+        row.style.gap = "0.75rem";
+        row.innerHTML = `
+          <span style="font-size: 1.25rem; width: 1.5rem; text-align: center;">${m.icon}</span>
+          <div style="flex-grow: 1;">
+            <div class="metrics-label-bar" style="margin-bottom: 0.15rem;">
+              <span style="font-weight: 600; font-size: 0.9rem; color: var(--color-gray-700);">${m.name}</span>
+              <span style="font-weight: 700; font-size: 0.85rem; color: var(--color-gray-500);">${val}/5</span>
+            </div>
+            <div class="metrics-track" style="height: 0.5rem; background-color: #f3f4f6;">
+              <div class="metrics-fill" style="width: ${pct}%; background-color: ${barColor}; height: 100%;"></div>
+            </div>
+            <p style="font-size: 0.75rem; color: var(--color-gray-400); margin-top: 0.15rem;">${m.desc}</p>
+          </div>
+        `;
+        metricsList.appendChild(row);
+      });
+
+      // Scientific Narrative set text
+      document.getElementById("science-narrative").innerText = description;
+    }
+
+    function renderCrossSectionGraphic(shape, browningRating) {
+      const container = document.getElementById("results-cross-section");
+      container.innerHTML = "";
+
+      let color = "#d4a84b";
+      if (browningRating >= 4) {
+        color = "#92400e";
+      } else if (browningRating >= 3) {
+        color = "#c8860a";
+      }
+
+      let width = "130px", height = "110px", rx = "50%", innerW = "60px", innerH = "50px", innerRx = "50%", borderType = "solid";
+
+      if (shape === "flat") {
+        width = "180px"; height = "35px"; rx = "8px"; innerW = "0px"; innerH = "0px";
+      } else if (shape === "churro") {
+        width = "80px"; height = "180px"; rx = "8px"; innerW = "30px"; innerH = "120px"; innerRx = "4px"; borderType = "dashed";
+      } else if (shape === "profiterole-large") {
+        width = "160px"; height = "140px"; rx = "50%"; innerW = "100px"; innerH = "90px";
+      }
+
+      // Outer crust shell (with nice soft shadow from screenshot)
+      const outer = document.createElement("div");
+      outer.style.width = width;
+      outer.style.height = height;
+      outer.style.backgroundColor = color;
+      outer.style.borderRadius = rx;
+      outer.style.position = "absolute";
+      outer.style.boxShadow = "0 8px 24px rgba(0,0,0,0.15)";
+      outer.style.transition = "all 0.5s ease";
+      container.appendChild(outer);
+
+      // Core Cavity hollow representation
+      if (innerW !== "0px") {
+        const inner = document.createElement("div");
+        inner.style.width = innerW;
+        inner.style.height = innerH;
+        inner.style.backgroundColor = "#fef3c7";
+        inner.style.borderRadius = innerRx;
+        inner.style.position = "absolute";
+        inner.style.border = `1.5px ${borderType} rgba(245,158,11,0.25)`;
+        inner.style.zIndex = "2";
+        inner.style.transition = "all 0.5s ease";
+        container.appendChild(inner);
+      }
+
+      // Porous texture dots for deep immersion frying churros
+      if (shape === "churro") {
+        const dotsOverlay = document.createElement("div");
+        dotsOverlay.style.position = "absolute";
+        dotsOverlay.style.inset = "0";
+        dotsOverlay.style.zIndex = "3";
+        dotsOverlay.style.display = "flex";
+        dotsOverlay.style.alignItems = "center";
+        dotsOverlay.style.justifyContent = "center";
+
+        // Seeded coordinate layout for consistent rendering inside the SLS iframe
+        const offsets = [
+          {t: '20%', l: '40%'}, {t: '35%', l: '55%'}, {t: '50%', l: '35%'}, {t: '65%', l: '50%'},
+          {t: '30%', l: '45%'}, {t: '45%', l: '60%'}, {t: '55%', l: '40%'}, {t: '70%', l: '55%'}
+        ];
+
+        offsets.forEach(pos => {
+          const dot = document.createElement("div");
+          dot.style.position = "absolute";
+          dot.style.borderRadius = "50%";
+          dot.style.backgroundColor = "#7c2d12";
+          dot.style.opacity = "0.2";
+          dot.style.width = "6px";
+          dot.style.height = "6px";
+          dot.style.top = pos.t;
+          dot.style.left = pos.l;
+          dotsOverlay.appendChild(dot);
+        });
+        container.appendChild(dotsOverlay);
+      }
+
+      const labelMap = {
+        flat: "Flat Disc (Failed)",
+        churro: "Churro (Dense)",
+        "profiterole-large": "Profiterole (Large Cavity)",
+        profiterole: "Profiterole"
+      };
+      document.getElementById("shape-classification").innerText = labelMap[shape] || "Standard Profiterole";
+    }
+
+    // Dynamic High-Fidelity Radar Chart SVG Engine (Matches concentric ring colors of screenshot)
+    function renderRadarChartGraphic(profile) {
+      const container = document.getElementById("radar-chart-container");
+      container.innerHTML = "";
+
+      const keys = ["rise", "cavitySize", "porosity", "strength", "browning", "crispiness", "moistureContent"];
+      const labels = ["Rise", "Cavity", "Porosity", "Strength", "Browning", "Crispiness", "Moisture"];
+      const numAxes = keys.length;
+      const width = 280;
+      const height = 220;
+      const cx = width / 2;
+      const cy = height / 2;
+      const maxRadius = 65;
+
+      let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">`;
+
+      // Draw concentric grid circles rating lines (1-5 scale grids) with ultra-thin outline
+      for (let r = 1; r <= 5; r++) {
+        const rad = (r / 5) * maxRadius;
+        svg += `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="none" stroke="#e5e7eb" stroke-width="1" />`;
+        // Draw small rating indicators along the horizontal line
+        if (r > 0) {
+          svg += `<text x="${cx + rad}" y="${cy + 10}" font-size="8" fill="#9ca3af" text-anchor="middle">${r}</text>`;
+        }
+      }
+
+      const points = [];
+      const labelPoints = [];
+
+      // Compute axes points
+      for (let i = 0; i < numAxes; i++) {
+        const angle = (i * 2 * Math.PI / numAxes) - Math.PI / 2;
+        
+        // Outer axis outline lines
+        const xOuter = cx + maxRadius * Math.cos(angle);
+        const yOuter = cy + maxRadius * Math.sin(angle);
+        svg += `<line x1="${cx}" y1="${cy}" x2="${xOuter}" y2="${yOuter}" stroke="#f3f4f6" stroke-width="1" />`;
+
+        // Value layout plot points
+        const valueKey = keys[i] === "moisture" ? "moistureContent" : keys[i];
+        const rating = profile[valueKey] || 1;
+        const currentRadius = (rating / 5) * maxRadius;
+        const xVal = cx + currentRadius * Math.cos(angle);
+        const yVal = cy + currentRadius * Math.sin(angle);
+        points.push(`${xVal},${yVal}`);
+
+        // Label layout offsets
+        const offset = maxRadius + 18;
+        const xText = cx + offset * Math.cos(angle);
+        const yText = cy + offset * Math.sin(angle);
+        labelPoints.push({ x: xText, y: yText, text: labels[i] });
+      }
+
+      // Draw structural data polygon shape with warm orange shading
+      svg += `<polygon points="${points.join(" ")}" fill="rgba(245, 158, 11, 0.35)" stroke="#ea580c" stroke-width="2" />`;
+
+      // Draw plot vertex circles
+      points.forEach(p => {
+        const coords = p.split(",");
+        svg += `<circle cx="${coords[0]}" cy="${coords[1]}" r="3.5" fill="#ea580c" />`;
+      });
+
+      // Render evaluation labels with standard gray colors
+      labelPoints.forEach(pt => {
+        svg += `<text x="${pt.x}" y="${pt.y}" text-anchor="middle" alignment-baseline="middle" font-size="9.5" font-weight="600" fill="#6b7280">${pt.text}</text>`;
+      });
+
+      svg += `</svg>`;
+      container.innerHTML = svg;
+    }
+
+
+    // Culinary Diagnostics Forensics Module Engine
+    function renderForensicsCase() {
+      const caseIdx = appState.forensics.activeCaseIdx;
+      const currentCase = FORENSICS_SCENARIOS[caseIdx];
+
+      // Reset Scenario Choice parameters
+      appState.forensics.selectedOption = null;
+      appState.forensics.feedbackGiven = false;
+
+      // Render case tab buttons
+      const tabs = document.getElementById("case-tabs-container");
+      tabs.innerHTML = "";
+      FORENSICS_SCENARIOS.forEach((s, idx) => {
+        const btn = document.createElement("button");
+        btn.className = `case-tab ${idx === caseIdx ? "active" : ""} ${appState.forensics.solved[s.id] ? "solved" : ""}`;
+        btn.innerText = appState.forensics.solved[s.id] ? `✓ Case ${idx + 1}` : `Case ${idx + 1}`;
+        btn.onclick = () => {
+          appState.forensics.activeCaseIdx = idx;
+          renderForensicsCase();
+        };
+        tabs.appendChild(btn);
+      });
+
+      // Map Case details values
+      document.getElementById("case-title").innerText = currentCase.title;
+      document.getElementById("case-header-sub").innerText = currentCase.headerSub;
+      document.getElementById("case-description").innerText = currentCase.description;
+
+      // Draw Vector physical defect rendering
+      renderForensicPastryVisual(currentCase.failureType);
+
+      // Render Table Kitchen Log
+      const tbody = document.getElementById("bakers-log-table");
+      tbody.innerHTML = "";
+      currentCase.bakersLog.forEach(row => {
+        const tr = document.createElement("tr");
+        if (row.isError) {
+          tr.className = "highlight-error";
+        }
+        tr.innerHTML = `
+          <td>${row.variable}</td>
+          <td>${row.value}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Map Multiple choice options
+      const optionsContainer = document.getElementById("forensic-options-container");
+      optionsContainer.innerHTML = "";
+      currentCase.options.forEach(opt => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.id = `opt-${opt.id}`;
+        
+        let marker = `<span style="font-weight: bold; color: var(--color-accent-dark); min-width: 1.5rem;">${opt.id}.</span>`;
+        btn.innerHTML = `${marker} <span style="flex-grow: 1;">${opt.text}</span> <div class="feedback-icon" style="display:none; align-items:center; justify-content:center;"></div>`;
+        btn.onclick = () => selectForensicOption(opt.id);
+        optionsContainer.appendChild(btn);
+      });
+
+      // Clear dynamic feedback
+      const feedback = document.getElementById("forensic-feedback");
+      feedback.style.display = "none";
+      feedback.className = "feedback-box";
+
+      renderForensicNavigationButtons();
+    }
+
+    // High-fidelity image mappings based on Screenshot 151001, 151010, 151029 specifications
+    function renderForensicPastryVisual(type) {
+      const container = document.getElementById("failed-pastry-render");
+      container.innerHTML = "";
+
+      let svg = "";
+      if (type === "collapsed") {
+        // Case 1 collapsed pastry - EXACTLY matches Screenshot 2026-05-19 151001.png
+        svg = `
+          <svg width="200" height="100" viewBox="0 0 200 100" style="display: block; margin: 0 auto;">
+            <!-- Subtle bottom shadow plate -->
+            <ellipse cx="100" cy="85" rx="88" ry="7" fill="rgba(0,0,0,0.06)" />
+            <!-- Collapsed dome body with wavy ripple top -->
+            <path d="M 10,80 C 12,52, 45,46, 80,53 C 105,55, 125,41, 160,41 C 185,41, 188,60, 190,80 Z" fill="#92400e" stroke="#5c2005" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+            <!-- High-contrast collapse dashed line inside bottom zone -->
+            <path d="M 22,80 C 35,68, 75,68, 100,71 C 120,73, 160,68, 178,80" fill="none" stroke="#5c2005" stroke-dasharray="4 4" stroke-width="1.5" stroke-linecap="round" opacity="0.6" />
+          </svg>
+        `;
+      } else if (type === "flat") {
+        // Case 2 flat pastry - EXACTLY matches Screenshot 2026-05-19 151010.png
+        svg = `
+          <svg width="200" height="100" viewBox="0 0 200 100" style="display: block; margin: 0 auto;">
+            <!-- Flat amber-yellow bar with rounded corners and distinct border -->
+            <rect x="15" y="44" width="170" height="22" rx="6" ry="6" fill="#d4a84b" stroke="#9a3412" stroke-width="2" />
+            <!-- Centered structural dashed line running completely straight across -->
+            <line x1="20" y1="55" x2="180" y2="55" stroke="#9a3412" stroke-dasharray="5 4" stroke-width="1.5" />
+          </svg>
+        `;
+      } else if (type === "cracked") {
+        // Case 3 cracked pastry - EXACTLY matches Screenshot 2026-05-19 151029.png
+        svg = `
+          <svg width="200" height="140" viewBox="0 0 200 140" style="display: block; margin: 0 auto;">
+            <!-- Round ochre puff ball -->
+            <ellipse cx="100" cy="70" rx="75" ry="60" fill="#c8860a" stroke="#7c2d12" stroke-width="2" />
+            <!-- Left slanted crack -->
+            <line x1="62" y1="21" x2="76" y2="47" stroke="#7c2d12" stroke-width="3.5" stroke-linecap="round" />
+            <!-- Center vertical crack -->
+            <line x1="100" y1="10" x2="101" y2="36" stroke="#7c2d12" stroke-width="3.5" stroke-linecap="round" />
+            <!-- Right slanted crack -->
+            <line x1="138" y1="21" x2="124" y2="47" stroke="#7c2d12" stroke-width="3.5" stroke-linecap="round" />
+          </svg>
+        `;
+      }
+
+      container.innerHTML = svg;
+
+      // Small caption layout underneath pastry image
+      const subtitleMap = {
+        "collapsed": "❌ Collapsed — Interior moist & underdone",
+        "flat": "❌ Never rose — Dense, no cavity",
+        "cracked": "⚠️ Crust cracked — Uneven expansion"
+      };
+      const textSpan = document.createElement("span");
+      textSpan.style.fontSize = "0.75rem";
+      textSpan.style.fontWeight = "700";
+      textSpan.style.color = "#dc2626";
+      textSpan.style.marginTop = "0.5rem";
+      textSpan.style.display = "block";
+      textSpan.innerText = subtitleMap[type] || "";
+      container.appendChild(textSpan);
+    }
+
+    function selectForensicOption(optId) {
+      if (appState.forensics.feedbackGiven) return;
+
+      appState.forensics.selectedOption = optId;
+
+      document.querySelectorAll("#forensic-options-container .option-btn").forEach(btn => {
+        btn.classList.remove("selected");
+      });
+      document.getElementById(`opt-${optId}`).classList.add("selected");
+
+      renderForensicNavigationButtons();
+    }
+
+    function submitForensicDiagnosis() {
+      const caseIdx = appState.forensics.activeCaseIdx;
+      const currentCase = FORENSICS_SCENARIOS[caseIdx];
+      const selectedId = appState.forensics.selectedOption;
+
+      if (!selectedId) return;
+
+      const optObj = currentCase.options.find(o => o.id === selectedId);
+      appState.forensics.feedbackGiven = true;
+
+      // Lock interactive buttons
+      document.querySelectorAll("#forensic-options-container .option-btn").forEach(btn => {
+        btn.disabled = true;
+      });
+
+      const card = document.getElementById(`opt-${selectedId}`);
+      const feedback = document.getElementById("forensic-feedback");
+      feedback.style.display = "block";
+
+      if (optObj.correct) {
+        card.classList.add("correct");
+        feedback.className = "feedback-box correct";
+        feedback.innerHTML = `<strong>Correct!</strong> <span style="font-size: 0.9rem; line-height: 1.5; display: block; margin-top: 0.25rem;">${optObj.feedback}</span>`;
+        
+        // Persist progress to local storage (SLS Sandboxing fallback active)
+        appState.forensics.solved[currentCase.id] = true;
+        try {
+          localStorage.setItem("forensicsProgress", JSON.stringify(appState.forensics.solved));
+        } catch(e) {}
+        updateHeader(); // Update solves score inside header instantly
+      } else {
+        card.classList.add("incorrect");
+        feedback.className = "feedback-box incorrect";
+        feedback.innerHTML = `<strong>Not quite…</strong> <span style="font-size: 0.9rem; line-height: 1.5; display: block; margin-top: 0.25rem;">${optObj.feedback}</span>`;
+      }
+
+      renderForensicNavigationButtons();
+    }
+
+    // Diagnostics cleanup
+    function resetAllForensics() {
+      appState.forensics.solved = {};
+      appState.forensics.selectedOption = null;
+      appState.forensics.feedbackGiven = false;
+      try {
+        localStorage.removeItem("forensicsProgress");
+      } catch(e) {}
+      updateHeader();
+      renderForensicsCase();
+    }
+
+    function retryForensics() {
+      renderForensicsCase();
+    }
+
+    function renderForensicNavigationButtons() {
+      const footer = document.getElementById("forensic-nav-footer");
+      footer.innerHTML = "";
+
+      const caseIdx = appState.forensics.activeCaseIdx;
+      const currentCase = FORENSICS_SCENARIOS[caseIdx];
+      const selectedId = appState.forensics.selectedOption;
+      const isComplete = appState.forensics.feedbackGiven;
+
+      const isCorrect = isComplete && currentCase.options.find(o => o.id === selectedId).correct;
+
+      if (!isComplete) {
+        const submitBtn = document.createElement("button");
+        submitBtn.className = selectedId ? "btn btn-primary" : "btn btn-disabled";
+        submitBtn.innerText = "Submit Answer";
+        submitBtn.onclick = selectedId ? submitForensicDiagnosis : null;
+        footer.appendChild(submitBtn);
+      } else {
+        if (!isCorrect) {
+          const retryBtn = document.createElement("button");
+          retryBtn.className = "btn btn-secondary";
+          retryBtn.innerText = "Try Again";
+          retryBtn.onclick = retryForensics;
+          footer.appendChild(retryBtn);
+        } else {
+          // Check progress index sequence
+          if (caseIdx < FORENSICS_SCENARIOS.length - 1) {
+            const nextCaseBtn = document.createElement("button");
+            nextCaseBtn.className = "btn btn-primary";
+            nextCaseBtn.innerText = "Next Case →";
+            nextCaseBtn.onclick = () => {
+              appState.forensics.activeCaseIdx++;
+              renderForensicsCase();
+            };
+            footer.appendChild(nextCaseBtn);
+          } else {
+            const homeBtn = document.createElement("button");
+            homeBtn.className = "btn btn-primary";
+            homeBtn.innerText = "🏆 Back to Entry Hub";
+            homeBtn.onclick = () => navigateTo("home");
+            footer.appendChild(homeBtn);
+          }
+        }
+      }
+    }
+
+    // Set dynamic default views on initial load
+    window.onload = function() {
+      updateHeader();
+    };
+  </script>
+</body>
+</html>
