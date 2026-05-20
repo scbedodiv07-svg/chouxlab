@@ -1247,6 +1247,7 @@
         thermalPhase: "bake",
         clicks: 0
       },
+      pastryHistory: [], // Cumulative pastry profile runs
       forensics: {
         activeCaseIdx: 0,
         selectedOption: null,
@@ -1254,13 +1255,18 @@
         solved: {}, // scenarioId -> boolean
         scores: {},  // scenarioId -> number (0 or 1)
         chosenOptions: {} // scenarioId -> selectedOptionId
-      }
+      },
+      forensicsHistory: [] // Cumulative forensics submission attempts
     };
 
     // ==========================================
     // xAPI INTEGRATION SYNCHRONIZATION MODULE
     // ==========================================
     function saveToSLS() {
+      // Ensure state arrays are safe and initialized
+      if (!appState.pastryHistory) appState.pastryHistory = [];
+      if (!appState.forensicsHistory) appState.forensicsHistory = [];
+
       // 1. Calculate Forensics Score
       let forensicsScore = 0;
       let totalCases = FORENSICS_SCENARIOS.length;
@@ -1270,66 +1276,77 @@
         }
       });
 
-      // 2. Build Recipe and Selections Text
+      // 2. Build Recipe Labels
       const LIQUID_LABELS = { water: "Water Base (💧)", milk: "Whole Milk (🥛)", blend: "50/50 Blend (🫙)" };
       const EGG_LABELS = { low: "Low Egg Count (🥚)", high: "High Egg Count (🥚🥚🥚)" };
       const THERMAL_LABELS = { bake: "Bake (Convection) (🔥)", fry: "Fry (Immersion) (🫕)" };
-      const PANADE_LABEL = appState.experiment.panadeWet ? "Saturated/Wet (⚠️)" : "Dry (✅ Starch film formed)";
 
-      const step1Text = LIQUID_LABELS[appState.experiment.liquid] || appState.experiment.liquid;
-      const step2Text = `Progress: ${Math.round(Math.min(100, (appState.experiment.clicks / 20) * 100))}% (${PANADE_LABEL})`;
-      const step3Text = EGG_LABELS[appState.experiment.eggs] || appState.experiment.eggs;
-      const step4Text = THERMAL_LABELS[appState.experiment.thermalPhase] || appState.experiment.thermalPhase;
-
-      // 3. Build Pastry Profile Text (if available)
-      let pastrySummary = "No simulation run completed yet.";
-      let simulationDetailsObj = null;
-      try {
-        const stored = localStorage.getItem("masterDoughResult");
-        if (stored) {
-          const results = JSON.parse(stored);
-          simulationDetailsObj = results;
-          const { profile, shape, description } = results;
-          
-          const labelMap = {
+      // 3. Compile Master Dough Simulation History Reports
+      let pastryHistoryText = "<br>--- MASTER DOUGH SIMULATION RUN HISTORY ---<br>";
+      if (appState.pastryHistory.length === 0) {
+        pastryHistoryText += "No simulation run completed yet.<br>";
+      } else {
+        appState.pastryHistory.forEach((run, idx) => {
+          const panadeLabel = run.panadeWet ? "Saturated/Wet (⚠️)" : "Dry (✅ Starch film formed)";
+          const liquidStr = LIQUID_LABELS[run.liquid] || run.liquid;
+          const eggStr = EGG_LABELS[run.eggs] || run.eggs;
+          const thermalStr = THERMAL_LABELS[run.thermalPhase] || run.thermalPhase;
+          const shapeLabel = {
             flat: "Flat Disc (Failed)",
             churro: "Churro (Dense)",
             "profiterole-large": "Profiterole (Large Cavity)",
             profiterole: "Profiterole"
-          };
-          const shapeText = labelMap[shape] || shape;
+          }[run.shape] || run.shape;
 
-          pastrySummary = `
---- MASTER DOUGH SIMULATION RESULTS ---
-• Final Pastry Shape: ${shapeText}
-• Starch Gelatinization & Expansion Metrics:
-  - Rise: ${profile.rise}/5
-  - Cavity Size: ${profile.cavitySize}/5
-  - Porosity: ${profile.porosity}/5
-  - Strength: ${profile.strength}/5
-  - Browning: ${profile.browning}/5
-  - Crispiness: ${profile.crispiness}/5
-  - Moisture Content: ${profile.moistureContent}/5
-
-• Scientific Analysis:
-"${description}"`;
-        }
-      } catch (e) {
-        console.warn("Could not parse simulation result for feedback block:", e);
+          pastryHistoryText += `
+Run #${idx + 1} [${run.timestamp}]:<br>
+• Selections:<br>
+  - Step 1 (Liquid Base): ${liquidStr}<br>
+  - Step 2 (Panade Cooking): Progress ${run.stirringProgressPercent}% (${panadeLabel})<br>
+  - Step 3 (Egg Ratio): ${eggStr}<br>
+  - Step 4 (Thermal Heat): ${thermalStr}<br>
+• Visualizer Output:<br>
+  - Final Pastry Shape: ${shapeLabel}<br>
+  - Starch Gelatinization & Expansion Metrics:<br>
+    * Rise: ${run.profile.rise}/5<br>
+    * Cavity Size: ${run.profile.cavitySize}/5<br>
+    * Porosity: ${run.profile.porosity}/5<br>
+    * Strength: ${run.profile.strength}/5<br>
+    * Browning: ${run.profile.browning}/5<br>
+    * Crispiness: ${run.profile.crispiness}/5<br>
+    * Moisture Content: ${run.profile.moistureContent}/5<br>
+• Scientific Analysis:<br>
+  "${run.description}"<br>
+--------------------------------------------------<br>`;
+        });
       }
 
-      // 4. Build Culinary Forensics details
-      let forensicsSummary = "\n--- CULINARY FORENSICS CASE LOGS ---\n";
+      // 4. Compile Culinary Forensics Attempt History Reports
+      let forensicsHistoryText = "<br>--- CULINARY FORENSICS SUBMISSION HISTORY ---<br>";
+      if (appState.forensicsHistory.length === 0) {
+        forensicsHistoryText += "No forensic submissions made yet.<br>";
+      } else {
+        appState.forensicsHistory.forEach((attempt, idx) => {
+          forensicsHistoryText += `
+Submission #${idx + 1} [${attempt.timestamp}]:<br>
+• Scenario: ${attempt.caseTitle}<br>
+• Option Selected: [Option ${attempt.selectedOptionId}] ${attempt.selectedOptionText}<br>
+• Outcome: ${attempt.isCorrect ? "Correct ✅" : "Incorrect ❌"}<br>
+• Score Awarded: ${attempt.score}/1<br>
+• Accompanying Explanation: "${attempt.explanatoryText}"<br>
+--------------------------------------------------<br>`;
+        });
+      }
+
+      // 5. Compile Culinary Forensics Current Status Details
+      let forensicsSummary = "<br>--- CULINARY FORENSICS CASE LOGS (CURRENT STATUS) ---<br>";
       FORENSICS_SCENARIOS.forEach((s, idx) => {
         const isSolved = appState.forensics.solved[s.id];
         const score = appState.forensics.scores[s.id] !== undefined ? appState.forensics.scores[s.id] : 0;
         
-        let selectedText = "No answer submitted yet.";
+        let selectedText = "No answer submitted yet.<br>";
         let answerFeedback = "";
         
-        if (!appState.forensics.chosenOptions) {
-          appState.forensics.chosenOptions = {};
-        }
         const chosenOptId = appState.forensics.chosenOptions[s.id];
         if (chosenOptId) {
           const opt = s.options.find(o => o.id === chosenOptId);
@@ -1344,45 +1361,28 @@ Case ${idx + 1}: ${s.title}<br>
 • Status: ${isSolved ? "Solved (Correct Answer Found) ✅" : "Unsolved ❌"}<br>
 • Score: ${score}/1<br>
 • Selected MCQ Option: ${selectedText}<br>
-• Explanation Feedback: ${answerFeedback ? `"${answerFeedback}"` : "N/A"}<br><br>`;
+• Explanation Feedback: ${answerFeedback ? `"${answerFeedback}"` : "N/A"}<br>`;
       });
 
-      // 5. Construct Overall Feedback String
-      const fullFeedback = `CHOUX PASTRY STEM LAB - STUDENT REPORT<br><br>
+      // 6. Construct Overall Feedback String
+      const fullFeedback = `CHOUX PASTRY STEM LAB - STUDENT REPORT
 
---- MASTER DOUGH SIMULATION SELECTIONS ---<br>
-• Step 1 (Liquid Base): ${step1Text}<br>
-• Step 2 (Panade Cooking): ${step2Text}<br>
-• Step 3 (Egg Ratio): ${step3Text}<br>
-• Step 4 (Thermal Heat): ${step4Text}<br>
-${pastrySummary}<br><br>
+${pastryHistoryText}
+${forensicsHistoryText}
 ${forensicsSummary}
 
-• Total Forensic Score: ${forensicsScore} / ${totalCases} (${Math.round((forensicsScore / totalCases) * 100)}%)`;
+• Current Total Forensic Score: ${forensicsScore} / ${totalCases} (${Math.round((forensicsScore / totalCases) * 100)}%)`;
 
-      // 6. Build final structured state object
+      // 7. Build final structured state object
       const stateObject = {
         score: forensicsScore,
         max_score: totalCases,
         feedback: fullFeedback,
         appState: appState,
-        simulation: simulationDetailsObj ? {
-          selections: {
-            liquid: appState.experiment.liquid,
-            panadeWet: appState.experiment.panadeWet,
-            eggs: appState.experiment.eggs,
-            thermalPhase: appState.experiment.thermalPhase
-          },
-          stirringClicks: appState.experiment.clicks,
-          stirringProgressPercent: Math.round(Math.min(100, (appState.experiment.clicks / 20) * 100)),
-          profile: simulationDetailsObj.profile,
-          shape: simulationDetailsObj.shape,
-          scientificAnalysis: simulationDetailsObj.description
-        } : null,
         timestamp: new Date().toISOString()
       };
 
-      // 7. Save state to SLS LRS LOM storage
+      // 8. Save state to SLS LRS LOM storage
       console.log("[xAPI] Saving student state to SLS LRS...", stateObject);
       try {
         window.storeState(stateObject);
@@ -1571,23 +1571,6 @@ ${forensicsSummary}
         } else {
           nextBtn.innerText = "Next →";
         }
-      }
-    }
-
-    function prevStep() {
-      if (appState.experiment.step > 0) {
-        appState.experiment.step--;
-        renderExperimentStep();
-      }
-    }
-
-    // Main step advance function
-    function nextStep() {
-      if (appState.experiment.step === 3) {
-        runCookingAnimation();
-      } else {
-        appState.experiment.step++;
-        renderExperimentStep();
       }
     }
 
@@ -1922,6 +1905,25 @@ ${forensicsSummary}
       const shape = panadeWet ? "flat" : (thermalPhase === "fry" ? "churro" : (eggs === "high" ? "profiterole-large" : "profiterole"));
       
       const scienceNarrativeText = getScientificAnalysisText(appState.experiment);
+
+      // Create history item for this pastry profile generation run
+      const historyItem = {
+        liquid: liquid,
+        panadeWet: panadeWet,
+        eggs: eggs,
+        thermalPhase: thermalPhase,
+        stirringClicks: appState.experiment.clicks,
+        stirringProgressPercent: Math.round(Math.min(100, (appState.experiment.clicks / 20) * 100)),
+        shape: shape,
+        profile: profile,
+        description: scienceNarrativeText,
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      if (!appState.pastryHistory) {
+        appState.pastryHistory = [];
+      }
+      appState.pastryHistory.push(historyItem);
 
       // Cache results to local state for persistence
       const resultsObj = { profile, shape, params: appState.experiment, description: scienceNarrativeText };
@@ -2410,7 +2412,7 @@ ${forensicsSummary}
       const feedback = document.getElementById("forensic-feedback");
       feedback.style.display = "block";
 
-      // Assign dynamic MCQ score parameters
+      // Assign MCQ score parameters
       const score = optObj.score;
       appState.forensics.scores[currentCase.id] = score;
 
@@ -2442,6 +2444,23 @@ ${forensicsSummary}
         } catch(e) {}
       }
 
+      // Record this attempt details to forensicsHistory to keep every change visible
+      const attempt = {
+        caseTitle: currentCase.title,
+        caseId: currentCase.id,
+        selectedOptionId: selectedId,
+        selectedOptionText: optObj.text,
+        isCorrect: optObj.correct,
+        score: score,
+        explanatoryText: optObj.feedback,
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      if (!appState.forensicsHistory) {
+        appState.forensicsHistory = [];
+      }
+      appState.forensicsHistory.push(attempt);
+
       // xAPI Integration: Publish forensics change (MCQ option, correct feedback, and score) to LRS
       saveToSLS();
 
@@ -2455,6 +2474,7 @@ ${forensicsSummary}
       appState.forensics.chosenOptions = {};
       appState.forensics.selectedOption = null;
       appState.forensics.feedbackGiven = false;
+      appState.forensicsHistory = []; // Reset forensics attempt log as well
       try {
         localStorage.removeItem("forensicsProgress");
       } catch(e) {}
@@ -2556,12 +2576,21 @@ ${forensicsSummary}
               }));
             } catch(e){}
           }
-          if (saved.simulation) {
+          
+          // Reconstruct masterDoughResult from last run in pastryHistory if present
+          if (appState.pastryHistory && appState.pastryHistory.length > 0) {
+            const lastRun = appState.pastryHistory[appState.pastryHistory.length - 1];
             const resultsObj = {
-              profile: saved.simulation.profile,
-              shape: saved.simulation.shape,
-              params: saved.simulation.selections,
-              description: saved.simulation.scientificAnalysis
+              profile: lastRun.profile,
+              shape: lastRun.shape,
+              params: {
+                liquid: lastRun.liquid,
+                panadeWet: lastRun.panadeWet,
+                eggs: lastRun.eggs,
+                thermalPhase: lastRun.thermalPhase,
+                clicks: lastRun.stirringClicks
+              },
+              description: lastRun.description
             };
             try {
               localStorage.setItem("masterDoughResult", JSON.stringify(resultsObj));
