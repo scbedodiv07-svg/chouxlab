@@ -1282,7 +1282,7 @@
       const THERMAL_LABELS = { bake: "Bake (Convection) (🔥)", fry: "Fry (Immersion) (🫕)" };
 
       // 3. Compile Master Dough Simulation History Reports
-      let pastryHistoryText = "<br>--- MASTER DOUGH SIMULATION RUN HISTORY ---<br>";
+      let pastryHistoryText = "<br><br>--- MASTER DOUGH SIMULATION RUN HISTORY ---<br>";
       if (appState.pastryHistory.length === 0) {
         pastryHistoryText += "No simulation run completed yet.<br>";
       } else {
@@ -1361,7 +1361,8 @@ Case ${idx + 1}: ${s.title}<br>
 • Status: ${isSolved ? "Solved (Correct Answer Found) ✅" : "Unsolved ❌"}<br>
 • Score: ${score}/1<br>
 • Selected MCQ Option: ${selectedText}<br>
-• Explanation Feedback: ${answerFeedback ? `"${answerFeedback}"` : "N/A"}<br>`;
+• Explanation Feedback: ${answerFeedback ? `"${answerFeedback}"` : "N/A"}<br>
+--------------------------------------------------<br>`;
       });
 
       // 6. Construct Overall Feedback String
@@ -1385,7 +1386,12 @@ ${forensicsSummary}
       // 8. Save state to SLS LRS LOM storage
       console.log("[xAPI] Saving student state to SLS LRS...", stateObject);
       try {
-        window.storeState(stateObject);
+        if (typeof window.storeState === 'function') {
+          window.storeState(stateObject);
+        } else {
+          console.warn("[xAPI] window.storeState is not a function. Storing state in localStorage fallback.");
+          localStorage.setItem("sls_state_fallback", JSON.stringify(stateObject));
+        }
       } catch (e) {
         console.error("[xAPI] Failed to save state to SLS:", e);
       }
@@ -1571,6 +1577,23 @@ ${forensicsSummary}
         } else {
           nextBtn.innerText = "Next →";
         }
+      }
+    }
+
+    function prevStep() {
+      if (appState.experiment.step > 0) {
+        appState.experiment.step--;
+        renderExperimentStep();
+      }
+    }
+
+    // Main step advance function
+    function nextStep() {
+      if (appState.experiment.step === 3) {
+        runCookingAnimation();
+      } else {
+        appState.experiment.step++;
+        renderExperimentStep();
       }
     }
 
@@ -2486,6 +2509,7 @@ ${forensicsSummary}
       renderForensicsCase();
     }
 
+    // Diagnostics retry
     function retryForensics() {
       // Clear chosen option for this case so they can submit again
       const caseIdx = appState.forensics.activeCaseIdx;
@@ -2562,9 +2586,19 @@ ${forensicsSummary}
     window.onload = function() {
       // 1. Recover existing student experiment/forensics states from LRS
       try {
-        const saved = window.getState();
+        let saved = null;
+        if (typeof window.getState === 'function') {
+          saved = window.getState();
+        } else {
+          console.warn("[xAPI] window.getState is not a function. Checking localStorage fallback.");
+          const fallback = localStorage.getItem("sls_state_fallback");
+          if (fallback) {
+            saved = JSON.parse(fallback);
+          }
+        }
+
         if (saved) {
-          console.log("[xAPI] Loaded previous student state from LRS:", saved);
+          console.log("[xAPI] Loaded previous student state:", saved);
           if (saved.appState) {
             appState = saved.appState;
             
