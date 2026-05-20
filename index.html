@@ -1186,9 +1186,9 @@
           { variable: "Venting/Piercing", value: "None ⚠️", isError: true }
         ],
         options: [
-          { id: "A", text: "Increase the amount of milk in the initial liquid base.", correct: false, feedback: "Incorrect. Adding more milk would increase moisture and decrease crispiness further, making collapse more likely." },
-          { id: "B", text: "Pierce the base of the pastry and return to the oven for 5 minutes (venting).", correct: true, feedback: "Correct! Piercing allows residual steam to escape. This prevents the steam from condensing back into water droplets, which softens and collapses the protein wall matrix." },
-          { id: "C", text: "Skip the stovetop stirring phase to keep the dough as wet as possible.", correct: false, feedback: "Incorrect. This would result in an underdried panade with poor absorption capacity for eggs, weakening structural strength." }
+          { id: "A", text: "Increase the amount of milk in the initial liquid base.", correct: false, score: 0, feedback: "Incorrect. Adding more milk would increase moisture and decrease crispiness further, making collapse more likely." },
+          { id: "B", text: "Pierce the base of the pastry and return to the oven for 5 minutes (venting).", correct: true, score: 1, feedback: "Correct! Piercing allows residual steam to escape. This prevents the steam from condensing back into water droplets, which softens and collapses the protein wall matrix." },
+          { id: "C", text: "Skip the stovetop stirring phase to keep the dough as wet as possible.", correct: false, score: 0, feedback: "Incorrect. This would result in an underdried panade with poor absorption capacity for eggs, weakening structural strength." }
         ]
       },
       {
@@ -1205,9 +1205,9 @@
           { variable: "Venting/Piercing", value: "Yes" }
         ],
         options: [
-          { id: "A", text: "Increase oven temperature to 230°C.", correct: false, feedback: "Incorrect. The problem is not the temperature — it's the wet panade. Higher heat cannot compensate for a structurally weak dough." },
-          { id: "B", text: "Add more flour to the mixture to thicken the batter.", correct: false, feedback: "Incorrect. Extra raw flour ruins proper starch swelling and gelatinization ratios." },
-          { id: "C", text: "Dry the panade properly on the stove until a starch film forms before adding eggs.", correct: true, feedback: "Correct! A properly dried panade (where moisture is cooked off until a starch film coats the pan) can incorporate egg proteins effectively, forming the structural boundary needed to trap expansion gas." }
+          { id: "A", text: "Increase oven temperature to 230°C.", correct: false, score: 0, feedback: "Incorrect. The problem is not the temperature — it's the wet panade. Higher heat cannot compensate for a structurally weak dough." },
+          { id: "B", text: "Add more flour to the mixture to thicken the batter.", correct: false, score: 0, feedback: "Incorrect. Extra raw flour ruins proper starch swelling and gelatinization ratios." },
+          { id: "C", text: "Dry the panade properly on the stove until a starch film forms before adding eggs.", correct: true, score: 1, feedback: "Correct! A properly dried panade (where moisture is cooked off until a starch film coats the pan) can incorporate egg proteins effectively, forming the structural boundary needed to trap expansion gas." }
         ]
       },
       {
@@ -1224,9 +1224,9 @@
           { variable: "Venting/Piercing", value: "Yes" }
         ],
         options: [
-          { id: "A", text: "Switch to whole milk to add fat and reduce surface tension.", correct: false, feedback: "Incorrect. While milk does soften the crust, the primary cause of irregular cracking is excessive heat shock causing uneven steam bursts — not the liquid type." },
-          { id: "B", text: "Reduce oven temperature to 190–200°C for a controlled, even rise.", correct: true, feedback: "Correct! At 240°C, the outer shell sets too quickly before internal steam can expand evenly. Reducing heat to 190–200°C allows steam to build gradually and expand the shell uniformly." },
-          { id: "C", text: "Use low egg count to reduce the internal steam pressure.", correct: false, feedback: "Incorrect. Reducing eggs would weaken the walls and cavity, but fails to correct the surface cracking caused by excessive thermal convection." }
+          { id: "A", text: "Switch to whole milk to add fat and reduce surface tension.", correct: false, score: 0, feedback: "Incorrect. While milk does soften the crust, the primary cause of irregular cracking is excessive heat shock causing uneven steam bursts — not the liquid type." },
+          { id: "B", text: "Reduce oven temperature to 190–200°C for a controlled, even rise.", correct: true, score: 1, feedback: "Correct! At 240°C, the outer shell sets too quickly before internal steam can expand evenly. Reducing heat to 190–200°C allows steam to build gradually and expand the shell uniformly." },
+          { id: "C", text: "Use low egg count to reduce the internal steam pressure.", correct: false, score: 0, feedback: "Incorrect. Reducing eggs would weaken the walls and cavity, but fails to correct the surface cracking caused by excessive thermal convection." }
         ]
       }
     ];
@@ -1246,7 +1246,8 @@
         activeCaseIdx: 0,
         selectedOption: null,
         feedbackGiven: false,
-        solved: {} // scenarioId -> boolean
+        solved: {}, // scenarioId -> boolean
+        scores: {}  // scenarioId -> number (0 or 1)
       }
     };
 
@@ -1254,7 +1255,21 @@
     try {
       const stored = localStorage.getItem("forensicsProgress");
       if (stored) {
-        appState.forensics.solved = JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.solved && parsed.scores) {
+            appState.forensics.solved = parsed.solved;
+            appState.forensics.scores = parsed.scores;
+          } else {
+            appState.forensics.solved = parsed;
+            appState.forensics.scores = {};
+            for (const key in parsed) {
+              if (parsed[key]) {
+                appState.forensics.scores[key] = 1;
+              }
+            }
+          }
+        }
       }
     } catch(e) {
       console.warn("Storage restricted in sandboxed SLS iframe; using in-memory progress states.");
@@ -2206,6 +2221,10 @@
       const feedback = document.getElementById("forensic-feedback");
       feedback.style.display = "block";
 
+      // Assign dynamic MCQ score parameters
+      const score = optObj.score;
+      appState.forensics.scores[currentCase.id] = score;
+
       if (optObj.correct) {
         card.classList.add("correct");
         feedback.className = "feedback-box correct";
@@ -2214,13 +2233,24 @@
         // Persist progress to local storage (SLS Sandboxing fallback active)
         appState.forensics.solved[currentCase.id] = true;
         try {
-          localStorage.setItem("forensicsProgress", JSON.stringify(appState.forensics.solved));
+          localStorage.setItem("forensicsProgress", JSON.stringify({
+            solved: appState.forensics.solved,
+            scores: appState.forensics.scores
+          }));
         } catch(e) {}
         updateHeader(); // Update solves score inside header instantly
       } else {
         card.classList.add("incorrect");
         feedback.className = "feedback-box incorrect";
         feedback.innerHTML = `<strong>Not quite…</strong> <span style="font-size: 0.9rem; line-height: 1.5; display: block; margin-top: 0.25rem;">${optObj.feedback}</span>`;
+        
+        // Save incorrect score choice state
+        try {
+          localStorage.setItem("forensicsProgress", JSON.stringify({
+            solved: appState.forensics.solved,
+            scores: appState.forensics.scores
+          }));
+        } catch(e) {}
       }
 
       renderForensicNavigationButtons();
@@ -2229,6 +2259,7 @@
     // Diagnostics cleanup
     function resetAllForensics() {
       appState.forensics.solved = {};
+      appState.forensics.scores = {};
       appState.forensics.selectedOption = null;
       appState.forensics.feedbackGiven = false;
       try {
