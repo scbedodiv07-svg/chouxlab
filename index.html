@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Choux Pastry STEM Lab</title>
+  
+  <!-- xAPI Tracking Integration Dependencies -->
+  <script src="xapiwrapper.min.js"></script>
+  <script src="xAPI.js"></script>
+
   <style>
     /* Modern Fluid CSS Design System with SLS Adaptive Tokens */
     :root {
@@ -1247,9 +1252,144 @@
         selectedOption: null,
         feedbackGiven: false,
         solved: {}, // scenarioId -> boolean
-        scores: {}  // scenarioId -> number (0 or 1)
+        scores: {},  // scenarioId -> number (0 or 1)
+        chosenOptions: {} // scenarioId -> selectedOptionId
       }
     };
+
+    // ==========================================
+    // xAPI INTEGRATION SYNCHRONIZATION MODULE
+    // ==========================================
+    function saveToSLS() {
+      // 1. Calculate Forensics Score
+      let forensicsScore = 0;
+      let totalCases = FORENSICS_SCENARIOS.length;
+      FORENSICS_SCENARIOS.forEach(s => {
+        if (appState.forensics.scores[s.id] !== undefined) {
+          forensicsScore += appState.forensics.scores[s.id];
+        }
+      });
+
+      // 2. Build Recipe and Selections Text
+      const LIQUID_LABELS = { water: "Water Base (💧)", milk: "Whole Milk (🥛)", blend: "50/50 Blend (🫙)" };
+      const EGG_LABELS = { low: "Low Egg Count (🥚)", high: "High Egg Count (🥚🥚🥚)" };
+      const THERMAL_LABELS = { bake: "Bake (Convection) (🔥)", fry: "Fry (Immersion) (🫕)" };
+      const PANADE_LABEL = appState.experiment.panadeWet ? "Saturated/Wet (⚠️)" : "Dry (✅ Starch film formed)";
+
+      const step1Text = LIQUID_LABELS[appState.experiment.liquid] || appState.experiment.liquid;
+      const step2Text = `Progress: ${Math.round(Math.min(100, (appState.experiment.clicks / 20) * 100))}% (${PANADE_LABEL})`;
+      const step3Text = EGG_LABELS[appState.experiment.eggs] || appState.experiment.eggs;
+      const step4Text = THERMAL_LABELS[appState.experiment.thermalPhase] || appState.experiment.thermalPhase;
+
+      // 3. Build Pastry Profile Text (if available)
+      let pastrySummary = "No simulation run completed yet.";
+      let simulationDetailsObj = null;
+      try {
+        const stored = localStorage.getItem("masterDoughResult");
+        if (stored) {
+          const results = JSON.parse(stored);
+          simulationDetailsObj = results;
+          const { profile, shape, description } = results;
+          
+          const labelMap = {
+            flat: "Flat Disc (Failed)",
+            churro: "Churro (Dense)",
+            "profiterole-large": "Profiterole (Large Cavity)",
+            profiterole: "Profiterole"
+          };
+          const shapeText = labelMap[shape] || shape;
+
+          pastrySummary = `
+--- MASTER DOUGH SIMULATION RESULTS ---
+• Final Pastry Shape: ${shapeText}
+• Starch Gelatinization & Expansion Metrics:
+  - Rise: ${profile.rise}/5
+  - Cavity Size: ${profile.cavitySize}/5
+  - Porosity: ${profile.porosity}/5
+  - Strength: ${profile.strength}/5
+  - Browning: ${profile.browning}/5
+  - Crispiness: ${profile.crispiness}/5
+  - Moisture Content: ${profile.moistureContent}/5
+
+• Scientific Analysis:
+"${description}"`;
+        }
+      } catch (e) {
+        console.warn("Could not parse simulation result for feedback block:", e);
+      }
+
+      // 4. Build Culinary Forensics details
+      let forensicsSummary = "\n--- CULINARY FORENSICS CASE LOGS ---\n";
+      FORENSICS_SCENARIOS.forEach((s, idx) => {
+        const isSolved = appState.forensics.solved[s.id];
+        const score = appState.forensics.scores[s.id] !== undefined ? appState.forensics.scores[s.id] : 0;
+        
+        let selectedText = "No answer submitted yet.";
+        let answerFeedback = "";
+        
+        if (!appState.forensics.chosenOptions) {
+          appState.forensics.chosenOptions = {};
+        }
+        const chosenOptId = appState.forensics.chosenOptions[s.id];
+        if (chosenOptId) {
+          const opt = s.options.find(o => o.id === chosenOptId);
+          if (opt) {
+            selectedText = `[Option ${opt.id}] ${opt.text}`;
+            answerFeedback = opt.feedback;
+          }
+        }
+
+        forensicsSummary += `
+Case ${idx + 1}: ${s.title}<br>
+• Status: ${isSolved ? "Solved (Correct Answer Found) ✅" : "Unsolved ❌"}<br>
+• Score: ${score}/1<br>
+• Selected MCQ Option: ${selectedText}<br>
+• Explanation Feedback: ${answerFeedback ? `"${answerFeedback}"` : "N/A"}<br><br>`;
+      });
+
+      // 5. Construct Overall Feedback String
+      const fullFeedback = `CHOUX PASTRY STEM LAB - STUDENT REPORT<br><br>
+
+--- MASTER DOUGH SIMULATION SELECTIONS ---<br>
+• Step 1 (Liquid Base): ${step1Text}<br>
+• Step 2 (Panade Cooking): ${step2Text}<br>
+• Step 3 (Egg Ratio): ${step3Text}<br>
+• Step 4 (Thermal Heat): ${step4Text}<br>
+${pastrySummary}<br><br>
+${forensicsSummary}
+
+• Total Forensic Score: ${forensicsScore} / ${totalCases} (${Math.round((forensicsScore / totalCases) * 100)}%)`;
+
+      // 6. Build final structured state object
+      const stateObject = {
+        score: forensicsScore,
+        max_score: totalCases,
+        feedback: fullFeedback,
+        appState: appState,
+        simulation: simulationDetailsObj ? {
+          selections: {
+            liquid: appState.experiment.liquid,
+            panadeWet: appState.experiment.panadeWet,
+            eggs: appState.experiment.eggs,
+            thermalPhase: appState.experiment.thermalPhase
+          },
+          stirringClicks: appState.experiment.clicks,
+          stirringProgressPercent: Math.round(Math.min(100, (appState.experiment.clicks / 20) * 100)),
+          profile: simulationDetailsObj.profile,
+          shape: simulationDetailsObj.shape,
+          scientificAnalysis: simulationDetailsObj.description
+        } : null,
+        timestamp: new Date().toISOString()
+      };
+
+      // 7. Save state to SLS LRS LOM storage
+      console.log("[xAPI] Saving student state to SLS LRS...", stateObject);
+      try {
+        window.storeState(stateObject);
+      } catch (e) {
+        console.error("[xAPI] Failed to save state to SLS:", e);
+      }
+    }
 
     // Load Forensic Progress from Local Storage (SLS Compliant Sandbox fallbacks)
     try {
@@ -1791,6 +1931,9 @@
 
       // Render Results panel visual interface
       renderResultsDashboard(resultsObj);
+
+      // Save complete simulation run and selections to LRS
+      saveToSLS();
     }
 
     function getScientificAnalysisText({ liquid, panadeWet, eggs, thermalPhase }) {
@@ -2064,9 +2207,19 @@
       const caseIdx = appState.forensics.activeCaseIdx;
       const currentCase = FORENSICS_SCENARIOS[caseIdx];
 
-      // Reset Scenario Choice parameters
-      appState.forensics.selectedOption = null;
-      appState.forensics.feedbackGiven = false;
+      // Restore answered selections if they exist, otherwise clear state variables
+      if (!appState.forensics.chosenOptions) {
+        appState.forensics.chosenOptions = {};
+      }
+      
+      const previouslyChosen = appState.forensics.chosenOptions[currentCase.id];
+      if (previouslyChosen) {
+        appState.forensics.selectedOption = previouslyChosen;
+        appState.forensics.feedbackGiven = true;
+      } else {
+        appState.forensics.selectedOption = null;
+        appState.forensics.feedbackGiven = false;
+      }
 
       // Render case tab buttons
       const tabs = document.getElementById("case-tabs-container");
@@ -2116,13 +2269,43 @@
         let marker = `<span style="font-weight: bold; color: var(--color-accent-dark); min-width: 1.5rem;">${opt.id}.</span>`;
         btn.innerHTML = `${marker} <span style="flex-grow: 1;">${opt.text}</span> <div class="feedback-icon" style="display:none; align-items:center; justify-content:center;"></div>`;
         btn.onclick = () => selectForensicOption(opt.id);
+        
+        // Disable button and color code option outcomes if case has been completed
+        if (appState.forensics.feedbackGiven) {
+          btn.disabled = true;
+          if (opt.id === previouslyChosen) {
+            btn.classList.add("selected");
+            if (opt.correct) {
+              btn.classList.add("correct");
+            } else {
+              btn.classList.add("incorrect");
+            }
+          } else if (opt.correct) {
+            btn.classList.add("correct");
+          }
+        }
+        
         optionsContainer.appendChild(btn);
       });
 
-      // Clear dynamic feedback
+      // Map feedback box parameters
       const feedback = document.getElementById("forensic-feedback");
-      feedback.style.display = "none";
-      feedback.className = "feedback-box";
+      if (appState.forensics.feedbackGiven && previouslyChosen) {
+        feedback.style.display = "block";
+        const optObj = currentCase.options.find(o => o.id === previouslyChosen);
+        if (optObj) {
+          if (optObj.correct) {
+            feedback.className = "feedback-box correct";
+            feedback.innerHTML = `<strong>Correct!</strong> <span style="font-size: 0.9rem; line-height: 1.5; display: block; margin-top: 0.25rem;">${optObj.feedback}</span>`;
+          } else {
+            feedback.className = "feedback-box incorrect";
+            feedback.innerHTML = `<strong>Not quite…</strong> <span style="font-size: 0.9rem; line-height: 1.5; display: block; margin-top: 0.25rem;">${optObj.feedback}</span>`;
+          }
+        }
+      } else {
+        feedback.style.display = "none";
+        feedback.className = "feedback-box";
+      }
 
       renderForensicNavigationButtons();
     }
@@ -2212,6 +2395,12 @@
       const optObj = currentCase.options.find(o => o.id === selectedId);
       appState.forensics.feedbackGiven = true;
 
+      // Track the selected choice within persistent application states
+      if (!appState.forensics.chosenOptions) {
+        appState.forensics.chosenOptions = {};
+      }
+      appState.forensics.chosenOptions[currentCase.id] = selectedId;
+
       // Lock interactive buttons
       document.querySelectorAll("#forensic-options-container .option-btn").forEach(btn => {
         btn.disabled = true;
@@ -2253,6 +2442,9 @@
         } catch(e) {}
       }
 
+      // xAPI Integration: Publish forensics change (MCQ option, correct feedback, and score) to LRS
+      saveToSLS();
+
       renderForensicNavigationButtons();
     }
 
@@ -2260,16 +2452,37 @@
     function resetAllForensics() {
       appState.forensics.solved = {};
       appState.forensics.scores = {};
+      appState.forensics.chosenOptions = {};
       appState.forensics.selectedOption = null;
       appState.forensics.feedbackGiven = false;
       try {
         localStorage.removeItem("forensicsProgress");
       } catch(e) {}
+      
+      // Save cleared diagnostic status to LRS
+      saveToSLS();
+
       updateHeader();
       renderForensicsCase();
     }
 
     function retryForensics() {
+      // Clear chosen option for this case so they can submit again
+      const caseIdx = appState.forensics.activeCaseIdx;
+      const currentCase = FORENSICS_SCENARIOS[caseIdx];
+      if (appState.forensics.chosenOptions) {
+        delete appState.forensics.chosenOptions[currentCase.id];
+      }
+      appState.forensics.selectedOption = null;
+      appState.forensics.feedbackGiven = false;
+      
+      // Clear solved parameters
+      appState.forensics.solved[currentCase.id] = false;
+      appState.forensics.scores[currentCase.id] = 0;
+      
+      // Save cleared case variables back to LRS
+      saveToSLS();
+
       renderForensicsCase();
     }
 
@@ -2282,7 +2495,13 @@
       const selectedId = appState.forensics.selectedOption;
       const isComplete = appState.forensics.feedbackGiven;
 
-      const isCorrect = isComplete && currentCase.options.find(o => o.id === selectedId).correct;
+      let isCorrect = false;
+      if (isComplete && selectedId) {
+        const selectedOpt = currentCase.options.find(o => o.id === selectedId);
+        if (selectedOpt && selectedOpt.correct) {
+          isCorrect = true;
+        }
+      }
 
       if (!isComplete) {
         const submitBtn = document.createElement("button");
@@ -2321,6 +2540,38 @@
 
     // Set dynamic default views on initial load
     window.onload = function() {
+      // 1. Recover existing student experiment/forensics states from LRS
+      try {
+        const saved = window.getState();
+        if (saved) {
+          console.log("[xAPI] Loaded previous student state from LRS:", saved);
+          if (saved.appState) {
+            appState = saved.appState;
+            
+            // Re-sync local storage properties for fallbacks
+            try {
+              localStorage.setItem("forensicsProgress", JSON.stringify({
+                solved: appState.forensics.solved,
+                scores: appState.forensics.scores
+              }));
+            } catch(e){}
+          }
+          if (saved.simulation) {
+            const resultsObj = {
+              profile: saved.simulation.profile,
+              shape: saved.simulation.shape,
+              params: saved.simulation.selections,
+              description: saved.simulation.scientificAnalysis
+            };
+            try {
+              localStorage.setItem("masterDoughResult", JSON.stringify(resultsObj));
+            } catch(e){}
+          }
+        }
+      } catch (e) {
+        console.warn("[xAPI] Failed to synchronize state from SLS:", e);
+      }
+
       updateHeader();
     };
   </script>
